@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -26,6 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -43,8 +47,7 @@ fun ForgotRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(uiState.navigateToHome) {
-        if (uiState.navigateToHome)
-            navigateToHome()
+        if (uiState.navigateToHome) navigateToHome()
     }
 
     if (rememberLifecycleEvent() == Lifecycle.Event.ON_STOP) {
@@ -79,7 +82,8 @@ fun ForgotScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(modifier = modifier.fillMaxWidth(),
+            OutlinedTextField(
+                modifier = modifier.fillMaxWidth(),
                 value = uiState.password,
                 onValueChange = {
                     uiEvent(ForgotUiEvent.OnPasswordChanged(it))
@@ -94,12 +98,17 @@ fun ForgotScreen(
                     IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                         Icon(imageVector = image, description)
                     }
-                })
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = if (passwordVisibility) VisualTransformation.None
+                else PasswordVisualTransformation(),
+            )
 
             Spacer(modifier = modifier.height(MaterialTheme.spacing.medium))
 
-            OutlinedTextField(modifier = modifier.fillMaxWidth(),
-                value = uiState.password,
+            OutlinedTextField(
+                modifier = modifier.fillMaxWidth(),
+                value = uiState.confirmPassword,
                 onValueChange = {
                     uiEvent(ForgotUiEvent.OnConfirmPasswordChanged(it))
                 },
@@ -114,7 +123,11 @@ fun ForgotScreen(
                     }) {
                         Icon(imageVector = image, null)
                     }
-                })
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = if (confirmPasswordVisibility) VisualTransformation.None
+                else PasswordVisualTransformation(),
+            )
 
             Spacer(modifier = modifier.height(MaterialTheme.spacing.medium))
 
