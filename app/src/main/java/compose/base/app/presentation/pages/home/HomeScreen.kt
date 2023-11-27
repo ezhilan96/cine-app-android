@@ -11,7 +11,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -44,7 +44,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         HomeRoutes.AccountScreen,
     )
     var navigationSelectedIndex by remember {
-        mutableIntStateOf(0)
+        mutableStateOf(0)
     }
 
     Scaffold(bottomBar = {

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class ConnectionState { Connected, Disconnected, Unknown }
+enum class ConnectionState { Connected, Disconnected, Pending }
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -23,15 +23,15 @@ class MainViewModel @Inject constructor(
     private val dataStore: UserPreferencesDataStore,
 ) : ViewModel() {
 
-    private val _connectionState: MutableStateFlow<ConnectionState> =
-        MutableStateFlow(ConnectionState.Unknown)
-    val connectionState: StateFlow<ConnectionState>
-        get() = _connectionState
-
 
     private val _loginState: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val loginState: StateFlow<Boolean?>
         get() = _loginState
+
+    private val _connectionState: MutableStateFlow<ConnectionState> =
+        MutableStateFlow(ConnectionState.Pending)
+    val connectionState: StateFlow<ConnectionState>
+        get() = _connectionState
 
     init {
         viewModelScope.launch {
@@ -41,11 +41,12 @@ class MainViewModel @Inject constructor(
         }
         viewModelScope.launch {
             networkConnectivityObserver.observe().collect { networkStatus ->
-                when (networkStatus) {
-                    Unknown, Available -> _connectionState.emit(ConnectionState.Connected)
-                    Lost -> _connectionState.emit(ConnectionState.Disconnected)
-                    Losing, UnAvailable -> _connectionState.emit(ConnectionState.Unknown)
+                val connectionState = when (networkStatus) {
+                    Unknown, Available -> ConnectionState.Connected
+                    Lost -> ConnectionState.Disconnected
+                    Losing, UnAvailable -> ConnectionState.Pending
                 }
+                _connectionState.emit(connectionState)
             }
         }
     }

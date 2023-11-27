@@ -40,7 +40,7 @@ class ForgotViewModel @Inject constructor(private val forgotUseCase: LoginUseCas
                 }
 
                 is ForgotUiEvent.OnConfirmPasswordChanged -> _forgotUiState.update { currentState ->
-                    currentState.copy(password = event.password)
+                    currentState.copy(confirmPassword = event.password)
                 }
 
                 ForgotUiEvent.OnSubmit -> _forgotUiState.update { currentState ->
