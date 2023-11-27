@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages
+package compose.base.app.presentation.core
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -1,11 +1,11 @@
 package compose.base.app.data.dataSource.local.db.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+//import androidx.room.Entity
+//import androidx.room.PrimaryKey
 
-@Entity
-data class UserEntity(
-    @PrimaryKey
-    val id:Int,
-    val name: String
-)
+//@Entity
+//data class UserEntity(
+//    @PrimaryKey
+//    val id:Int,
+//    val name: String
+//)

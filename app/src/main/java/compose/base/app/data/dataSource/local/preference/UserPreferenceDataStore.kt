@@ -17,7 +17,7 @@ class UserPreferencesDataStore @Inject constructor(
     private val _tokenKey = stringPreferencesKey("token")
 
     val isLoggedIn: Flow<Boolean> = userPreferencesDataStore.data.map {
-        it[_tokenKey].isNullOrEmpty()
+        !it[_tokenKey].isNullOrEmpty()
     }
 
     suspend fun login(token: String) {
@@ -26,7 +26,7 @@ class UserPreferencesDataStore @Inject constructor(
         }
     }
 
-    suspend fun putUserDetails(token: String){
+    suspend fun putUserDetails(token: String) {
         userPreferencesDataStore.edit {
             it[_tokenKey] = token
         }

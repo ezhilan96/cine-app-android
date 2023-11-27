@@ -1,5 +1,6 @@
 package compose.base.app.presentation.ui.theme
 
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ShapeDefaults
@@ -10,7 +11,11 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.dp
 
 val defaultShapes = Shapes(
-    extraSmall = ShapeDefaults.ExtraSmall.copy(),
+    extraSmall = ShapeDefaults.ExtraSmall.copy(CornerSize(2.dp)),
+    small = ShapeDefaults.Small.copy(CornerSize(4.dp)),
+    medium = ShapeDefaults.Medium.copy(CornerSize(6.dp)),
+    large = ShapeDefaults.Large.copy(CornerSize(10.dp)),
+    extraLarge = ShapeDefaults.ExtraLarge.copy(CornerSize(20.dp)),
 )
 
 data class CustomShapes(
@@ -25,7 +30,10 @@ data class CustomShapes(
     val largeEnd: RoundedCornerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
     val smallBottom: RoundedCornerShape = RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp),
     val mediumBottom: RoundedCornerShape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
-    val largeBottom: RoundedCornerShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
+    val largeBottom: RoundedCornerShape = RoundedCornerShape(
+        bottomStart = 16.dp,
+        bottomEnd = 16.dp
+    ),
 )
 
 val LocalCustomShapes = compositionLocalOf { CustomShapes() }
