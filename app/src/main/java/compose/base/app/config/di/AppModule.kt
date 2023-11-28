@@ -1,6 +1,7 @@
 package compose.base.app.config.di
 
 import android.content.Context
+import compose.base.app.BuildConfig
 import compose.base.app.R
 import compose.base.app.config.Constants.AUTH_HEADER
 import compose.base.app.config.Constants.TOKEN_PREFIX
@@ -12,7 +13,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.ak1.drawbox.BuildConfig
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -27,6 +27,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    // TODO: Store TMDB apiKey inside app
     @Provides
     @Singleton
     fun provideAuthInterceptor(dataStore: UserPreferencesDataStore): Interceptor =

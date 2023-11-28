@@ -31,4 +31,5 @@ class AuthRepositoryImpl @Inject constructor(
     }.flowOn(ioDispatcher)
 
     override suspend fun saveLoginInfo(token: String) = dataStore.putUserDetails(token)
+    override fun logout() = dataStore.logout()
 }

@@ -1,6 +1,6 @@
 package compose.base.app.data.dataSource.local.db.dao
 
-import androidx.room.Dao
+//import androidx.room.Dao
 
-@Dao
-abstract class UserDao
+//@Dao
+//abstract class UserDao
