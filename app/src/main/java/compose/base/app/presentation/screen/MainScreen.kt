@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages
+package compose.base.app.presentation.screen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,14 +17,14 @@ import androidx.navigation.compose.rememberNavController
 import compose.base.app.config.util.navigateClearingStack
 import compose.base.app.presentation.core.NoInternetScreen
 import compose.base.app.presentation.core.SplashScreen
-import compose.base.app.presentation.pages.auth.forgot.ForgotRoute
-import compose.base.app.presentation.pages.auth.login.LoginRoute
-import compose.base.app.presentation.pages.auth.signup.SignupRoute
-import compose.base.app.presentation.pages.home.HomeRoute
+import compose.base.app.presentation.screen.auth.forgot.ForgotRoute
+import compose.base.app.presentation.screen.auth.login.LoginRoute
+import compose.base.app.presentation.screen.auth.signup.SignupRoute
+import compose.base.app.presentation.screen.home.HomeScreen
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainNavGraph(
+fun MainScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
@@ -48,7 +48,9 @@ fun MainNavGraph(
             NoInternetScreen(modifier = modifier.padding(it))
         } else {
             NavHost(
-                modifier =  modifier.padding(it).fillMaxSize(),
+                modifier = modifier
+                    .padding(it)
+                    .fillMaxSize(),
                 navController = navController,
                 startDestination = MainRoutes.SplashScreen.route,
             ) {
@@ -63,8 +65,13 @@ fun MainNavGraph(
                     composable(route = AuthRoutes.LoginScreen.route) {
                         LoginRoute(
                             modifier = modifier,
-                            navController = navController,
                             navigateToHome = navigateToHome,
+                            navigateToSignUp = {
+                                navController.navigate(AuthRoutes.SignUpScreen.route)
+                            },
+                            navigateToForgot = {
+                                navController.navigate(AuthRoutes.ForgotScreen.route)
+                            },
                         )
                     }
 
@@ -84,10 +91,7 @@ fun MainNavGraph(
                 }
 
                 composable(route = MainRoutes.Home.route) {
-                    HomeRoute(
-                        modifier = modifier,
-                        navController = navController,
-                    )
+                    HomeScreen(modifier = modifier)
                 }
             }
         }
@@ -97,18 +101,18 @@ fun MainNavGraph(
 
 sealed class MainRoutes(val route: String) {
 
-    object SplashScreen : MainRoutes(route = "splash")
+    data object SplashScreen : MainRoutes(route = "splash")
 
-    object Home : MainRoutes(route = "home")
+    data object Home : MainRoutes(route = "home")
 
-    object Auth : MainRoutes(route = "auth")
+    data object Auth : MainRoutes(route = "auth")
 }
 
 sealed class AuthRoutes(val route: String) {
 
-    object LoginScreen : AuthRoutes(route = "login")
+    data object LoginScreen : AuthRoutes(route = "login")
 
-    object SignUpScreen : AuthRoutes(route = "sign_up")
+    data object SignUpScreen : AuthRoutes(route = "sign_up")
 
-    object ForgotScreen : AuthRoutes(route = "forgot")
+    data object ForgotScreen : AuthRoutes(route = "forgot")
 }

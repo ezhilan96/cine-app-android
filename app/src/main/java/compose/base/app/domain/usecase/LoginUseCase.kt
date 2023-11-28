@@ -13,11 +13,12 @@ import javax.inject.Singleton
 class LoginUseCase @Inject constructor(
     private val repo: AuthRepository
 ) {
-
-    operator fun invoke(phoneNumber: String): Flow<NetworkResponse<LoginResponse>> =
-        repo.login(LoginRequest(phoneNumber = phoneNumber)).onEach { response ->
+    suspend operator fun invoke(phoneNumber: String): Flow<NetworkResponse<LoginResponse>> {
+        repo.saveLoginInfo(phoneNumber)
+        return repo.login(LoginRequest(phoneNumber = phoneNumber)).onEach { response ->
             if (response is NetworkResponse.Success) {
                 repo.saveLoginInfo(token = response.responseData.token)
             }
         }
+    }
 }

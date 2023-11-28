@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages.auth.signup
+package compose.base.app.presentation.screen.auth.signup
 
 import androidx.lifecycle.ViewModel
 import compose.base.app.domain.usecase.LoginUseCase

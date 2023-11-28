@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages.auth.login
+package compose.base.app.presentation.screen.auth.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,11 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import compose.base.app.config.util.rememberLifecycleEvent
-import compose.base.app.presentation.pages.AuthRoutes
 import compose.base.app.presentation.ui.theme.CineTheme
-import compose.base.app.presentation.ui.theme.colors
 import compose.base.app.presentation.ui.theme.spacing
 
 @ExperimentalMaterial3Api
@@ -39,15 +36,16 @@ import compose.base.app.presentation.ui.theme.spacing
 fun LoginRoute(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
-    navController: NavController,
+    navigateToSignUp: () -> Unit,
+    navigateToForgot: () -> Unit,
     navigateToHome: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(uiState) {
         when {
             uiState.navigateToHome -> navigateToHome()
-            uiState.navigateToSignup -> navController.navigate(AuthRoutes.SignUpScreen.route)
-            uiState.navigateToForgot -> navController.navigate(AuthRoutes.ForgotScreen.route)
+            uiState.navigateToSignup -> navigateToSignUp()
+            uiState.navigateToForgot -> navigateToForgot()
         }
     }
     if (rememberLifecycleEvent() == Lifecycle.Event.ON_STOP) viewModel.onScreenFinish()
@@ -109,7 +107,7 @@ fun LoginScreen(
                     modifier = modifier
                         .align(Alignment.Center)
                         .wrapContentSize()
-                        .background(color = MaterialTheme.colors.textLight)
+                        .background(color = MaterialTheme.colorScheme.background)
                         .padding(horizontal = MaterialTheme.spacing.small),
                     text = "New to Cine?",
                     style = MaterialTheme.typography.bodySmall,

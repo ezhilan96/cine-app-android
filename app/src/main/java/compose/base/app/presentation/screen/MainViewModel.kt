@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages
+package compose.base.app.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

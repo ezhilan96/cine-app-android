@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages.auth.login
+package compose.base.app.presentation.screen.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -53,9 +53,7 @@ class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase)
                     currentState.copy(navigateToSignup = true)
                 }
 
-                LoginUiEvent.OnSubmit -> _loginUiState.update { currentState ->
-                    currentState.copy(navigateToHome = true)
-                }
+                LoginUiEvent.OnSubmit -> submit()
             }
         }
     }

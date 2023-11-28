@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import compose.base.app.presentation.pages.MainNavGraph
+import compose.base.app.presentation.screen.MainScreen
 import compose.base.app.presentation.ui.theme.CineTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         setContent {
             CineTheme {
-                MainNavGraph()
+                MainScreen()
             }
         }
     }

@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages.auth.forgot
+package compose.base.app.presentation.screen.auth.forgot
 
 import androidx.lifecycle.ViewModel
 import compose.base.app.domain.usecase.LoginUseCase

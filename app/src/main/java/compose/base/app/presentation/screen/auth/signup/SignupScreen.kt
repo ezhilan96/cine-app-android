@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages.auth.signup
+package compose.base.app.presentation.screen.auth.signup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,9 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import compose.base.app.config.util.rememberLifecycleEvent
-import compose.base.app.presentation.pages.MainRoutes
 import compose.base.app.presentation.ui.theme.CineTheme
 import compose.base.app.presentation.ui.theme.spacing
 

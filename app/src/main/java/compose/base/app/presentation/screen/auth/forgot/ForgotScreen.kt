@@ -1,4 +1,4 @@
-package compose.base.app.presentation.pages.auth.forgot
+package compose.base.app.presentation.screen.auth.forgot
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

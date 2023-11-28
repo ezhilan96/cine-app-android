@@ -12,4 +12,6 @@ interface AuthRepository {
     fun login(loginRequest: LoginRequest): Flow<NetworkResponse<LoginResponse>>
 
     suspend fun saveLoginInfo(token: String)
+
+    fun logout()
 }
