@@ -5,7 +5,6 @@ import com.ezhilan.cine.BuildConfig
 import com.ezhilan.cine.R
 import com.ezhilan.cine.core.Constants.JSON_AUTH_HEADER
 import com.ezhilan.cine.core.Constants.JSON_BEARER_PREFIX
-import com.ezhilan.cine.data.dataSource.local.dataStore.UserPreferencesDataStore
 import com.ezhilan.cine.data.dataSource.remote.AuthService
 import com.ezhilan.cine.data.dataSource.remote.HomeService
 import dagger.Module
@@ -13,8 +12,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -30,16 +27,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(dataStore: UserPreferencesDataStore): Interceptor =
-        Interceptor { chain ->
-            val authenticatedRequest = chain.request().newBuilder()
-            runBlocking {
-                dataStore.userDetails.first()?.token?.let {
-                    authenticatedRequest.header(JSON_AUTH_HEADER, "$JSON_BEARER_PREFIX $it")
-                }
-            }
-            chain.proceed(authenticatedRequest.build())
-        }
+    fun provideAuthInterceptor(): Interceptor = Interceptor { chain ->
+        val authenticatedRequest = chain.request().newBuilder()
+        val apiKey = BuildConfig.API_KEY
+        authenticatedRequest.header(JSON_AUTH_HEADER, "$JSON_BEARER_PREFIX $apiKey")
+        chain.proceed(authenticatedRequest.build())
+    }
 
     @Provides
     @Singleton
@@ -69,7 +62,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesDriverService(
+    fun providesHomeService(
         @ApplicationContext context: Context,
         client: OkHttpClient,
         converterFactory: Converter.Factory,

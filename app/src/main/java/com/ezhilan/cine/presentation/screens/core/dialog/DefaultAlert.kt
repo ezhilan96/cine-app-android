@@ -27,7 +27,7 @@ fun DefaultAlert(
             dismissOnClickOutside = true,
         ),
         onDismissRequest = onDismiss,
-        text = { Text(text = message, style = MaterialTheme.textStyle.emptyListTitle) },
+        text = { Text(text = message) },
         confirmButton = {
             if (acceptButtonLabel.isNotEmpty()) {
                 TextButton(onClick = onAccept) {
