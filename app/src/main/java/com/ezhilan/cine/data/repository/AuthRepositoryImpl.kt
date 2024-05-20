@@ -1,27 +1,23 @@
 package com.ezhilan.cine.data.repository
 
-import com.ezhilan.cine.core.di.IoDispatcher
 import com.ezhilan.cine.data.dataSource.local.dataStore.UserPreferencesDataStore
 import com.ezhilan.cine.data.dataSource.remote.AuthService
-import com.ezhilan.cine.data.dataSource.remote.HomeService
+import com.ezhilan.cine.data.model.remote.request.CreateSessionRequest
+import com.ezhilan.cine.data.model.remote.response.CreateRequestTokenResponse
+import com.ezhilan.cine.data.model.remote.response.CreateSessionResponse
 import com.ezhilan.cine.data.util.DataState
 import com.ezhilan.cine.domain.repository.AuthRepository
 import com.ezhilan.cine.domain.repository.core.NetworkConnectionRepository
 import com.ezhilan.cine.domain.repository.core.RemoteRepository
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
-import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     connectionRepo: NetworkConnectionRepository,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val authService: AuthService,
-    private val homeService: HomeService,
     private val dataStore: UserPreferencesDataStore,
 ) : AuthRepository, RemoteRepository(connectionRepo) {
 
@@ -29,18 +25,21 @@ class AuthRepositoryImpl @Inject constructor(
         logout()
     }
 
-    override val isLoggedIn: Flow<Boolean>
-        get() = dataStore.isLoggedIn
+    override val isSessionActive: Flow<Boolean>
+        get() = dataStore.isSessionActive
 
-    override suspend fun login(): Flow<DataState<Response<Unit>>> =
-        flowOf(DataState.Success(Response.success(Unit)))
-//    executeRemoteCall {
-//        authService.getOtp()
-//    }
-            .onEach {
-                if (it is DataState.Success)
-                    dataStore.login()
-            }
+    override suspend fun createRequestToken(): Flow<DataState<CreateRequestTokenResponse>> =
+        executeRemoteCall {
+            authService.createRequestToken()
+        }.onEach {
+            if (it is DataState.Success)
+                dataStore.login()
+        }
+
+    override suspend fun createSession(createSessionRequest: CreateSessionRequest): Flow<DataState<CreateSessionResponse>> =
+        executeRemoteCall {
+            authService.createSession(createSessionRequest)
+        }
 
 
     override fun logout() = dataStore.logout()

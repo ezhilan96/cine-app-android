@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.ezhilan.cine.presentation.screens.auth.AuthNavHost
+import com.ezhilan.cine.presentation.screens.auth.AuthDestination
 import com.ezhilan.cine.presentation.screens.core.screen.SplashScreen
 import com.ezhilan.cine.presentation.screens.home.HomeNavHost
 import com.ezhilan.cine.presentation.screens.routes.MainRoute
@@ -29,7 +29,7 @@ fun MainNavHost(
         }
 
         composable(route = MainRoute.AuthRoute.route) {
-            AuthNavHost(modifier = modifier)
+            AuthDestination(modifier = modifier)
         }
 
         composable(route = MainRoute.HomeRoute.route) {
@@ -38,17 +38,8 @@ fun MainNavHost(
     }
 
     LaunchedEffect(sessionState) {
-        when (sessionState) {
-
-            SessionState.ACTIVE -> {
-                navController.navigateClearingStack(MainRoute.HomeRoute.route)
-            }
-
-            SessionState.EXPIRED -> {
-                navController.navigateClearingStack(MainRoute.AuthRoute.route)
-            }
-
-            else -> {}
+        if (sessionState == SessionState.ACTIVE) {
+            navController.navigateClearingStack(MainRoute.HomeRoute.route)
         }
     }
 }

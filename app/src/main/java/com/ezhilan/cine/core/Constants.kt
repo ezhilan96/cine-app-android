@@ -45,4 +45,19 @@ object Constants {
     const val ROUTE_SETTINGS = "Route settings"
 
     const val ROUTE_ARG_PHONE = "phone"
+    val lanuages = listOf(
+        "en-US",
+        "hi-IN",
+        "fr-FR",
+        "de-DE",
+        "es-ES",
+        "it-IT",
+        "ja-JP",
+        "ko-KR",
+        "pt-BR",
+        "ru-RU",
+        "zh-CN",
+        "zh-TW",
+        "ar-EG",
+    )
 }

@@ -8,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ezhilan.cine.presentation.screens.routes.AuthRoute
 
 @Composable
-fun AuthNavHost(modifier: Modifier = Modifier) {
+fun AuthDestination(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val navigateUp: () -> Unit = { navController.navigateUp() }
     NavHost(

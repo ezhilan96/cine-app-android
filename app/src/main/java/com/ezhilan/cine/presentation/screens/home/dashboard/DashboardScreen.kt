@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ezhilan.cine.presentation.screens.home.dashboard.settings.SettingsDestination
+import com.ezhilan.cine.presentation.screens.home.dashboard.trending.TrendingDestination
 import com.ezhilan.cine.presentation.screens.routes.DashboardRoute
 import com.ezhilan.cine.presentation.screens.routes.dashboardMenuItems
 
@@ -62,7 +63,7 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
             startDestination = DashboardRoute.TrendingDestination.route,
         ) {
             composable(DashboardRoute.TrendingDestination.route) {
-
+                TrendingDestination(modifier = modifier)
             }
             composable(DashboardRoute.DiscoverDestination.route) {
 

@@ -16,16 +16,16 @@ import javax.inject.Singleton
 class UserPreferencesDataStore @Inject constructor(
     private val userPreferencesDataStore: DataStore<Preferences>
 ) {
-    private val loginStatusKey = booleanPreferencesKey("isLoggedIn")
+    private val sessionKey = booleanPreferencesKey("session")
     private val appThemeKey = stringPreferencesKey("appTheme")
 
-    val isLoggedIn: Flow<Boolean> = userPreferencesDataStore.data.map { preferences ->
-        preferences[loginStatusKey] ?: true
+    val isSessionActive: Flow<Boolean> = userPreferencesDataStore.data.map { preferences ->
+        preferences[sessionKey] ?: true
     }
 
     suspend fun login() {
         userPreferencesDataStore.edit {
-            it[loginStatusKey] = true
+            it[sessionKey] = true
         }
     }
 

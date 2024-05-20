@@ -19,6 +19,7 @@ data class Spacing(
     val unit50: Dp = (sizeFactor * 50).dp,
     val unit100: Dp = (sizeFactor * 100).dp,
 
+    val grid05: Dp = (sizeFactor * 4).dp,
     val grid1: Dp = (sizeFactor * 8).dp,
     val grid2: Dp = (sizeFactor * 16).dp,
     val grid3: Dp = (sizeFactor * 24).dp,

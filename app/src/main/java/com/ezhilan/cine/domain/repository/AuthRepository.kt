@@ -1,14 +1,17 @@
 package com.ezhilan.cine.domain.repository
 
+import com.ezhilan.cine.data.model.remote.request.CreateSessionRequest
+import com.ezhilan.cine.data.model.remote.response.CreateRequestTokenResponse
+import com.ezhilan.cine.data.model.remote.response.CreateSessionResponse
 import com.ezhilan.cine.data.util.DataState
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 
 interface AuthRepository {
 
-    val isLoggedIn: Flow<Boolean>
+    val isSessionActive: Flow<Boolean>
 
-    suspend fun login(): Flow<DataState<Response<Unit>>>
+    suspend fun createRequestToken(): Flow<DataState<CreateRequestTokenResponse>>
+    suspend fun createSession(createSessionRequest: CreateSessionRequest): Flow<DataState<CreateSessionResponse>>
 
     fun logout()
 
