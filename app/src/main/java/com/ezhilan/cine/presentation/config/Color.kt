@@ -73,6 +73,7 @@ val seed = Color(0xFF6750A4)
 data class Colors(
     val white: Color = Color(0xFFFFFFFF),
     val black: Color = Color(0xFF000000),
+    val star_yellow: Color = Color(0xFFFFE8BE),
 )
 
 val LocalColors = compositionLocalOf { Colors() }

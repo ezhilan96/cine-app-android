@@ -1,9 +1,7 @@
 package com.ezhilan.cine.presentation.screens
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ezhilan.cine.core.TAG
 import com.ezhilan.cine.data.repository.core.ConnectionState
 import com.ezhilan.cine.domain.repository.AuthRepository
 import com.ezhilan.cine.domain.repository.core.NetworkConnectionRepository
@@ -47,7 +45,6 @@ class MainViewModel @Inject constructor(
         }
         viewModelScope.launch {
             authRepo.isSessionActive.collect {
-                Log.i(TAG, "$it")
                 _uiState.update { currentState ->
                     currentState.copy(
                         sessionState = if (it) SessionState.ACTIVE else SessionState.EXPIRED

@@ -25,6 +25,8 @@ data class Spacing(
     val grid3: Dp = (sizeFactor * 24).dp,
     val grid4: Dp = (sizeFactor * 32).dp,
     val grid5: Dp = (sizeFactor * 40).dp,
+
+    val size_rating_star: Dp = (sizeFactor * 14).dp,
 )
 
 val LocalSpacing = compositionLocalOf { Spacing() }

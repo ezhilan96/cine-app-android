@@ -1,6 +1,6 @@
 package com.ezhilan.cine.presentation.screens.home.dashboard
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -22,7 +22,6 @@ import com.ezhilan.cine.presentation.screens.home.dashboard.trending.TrendingDes
 import com.ezhilan.cine.presentation.screens.routes.DashboardRoute
 import com.ezhilan.cine.presentation.screens.routes.dashboardMenuItems
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DashboardScreen(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
@@ -57,8 +56,9 @@ fun DashboardScreen(modifier: Modifier = Modifier) {
                 }
             }
         },
-    ) {
+    ) { safeAreaPadding ->
         NavHost(
+            modifier = modifier.padding(safeAreaPadding),
             navController = navController,
             startDestination = DashboardRoute.TrendingDestination.route,
         ) {

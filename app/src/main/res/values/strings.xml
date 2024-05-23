@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Cine</string>
 
+    <string name="image_base_url">https://image.tmdb.org/t/p/original%1$s</string>
+
     <string name="uri_package">package:%1$s</string>
     <string name="url_google_map">http://maps.google.com/maps?daddr=%1$s,%2$s</string>
     <string name="google_map_query">google.navigation:q=%1$s,%2$s</string>

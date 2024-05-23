@@ -1,9 +1,7 @@
 package com.ezhilan.cine.presentation.screens.home.dashboard.settings
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ezhilan.cine.core.TAG
 import com.ezhilan.cine.data.dataSource.local.dataStore.UserPreferencesDataStore
 import com.ezhilan.cine.presentation.config.AppTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +43,6 @@ class SettingsViewModel @Inject constructor(private val dataStore: UserPreferenc
     fun onUiEvent(event: SettingsScreenUiEvent) {
         when (event) {
             is SettingsScreenUiEvent.OnThemeChanged -> {
-                Log.i(TAG, "onUiEvent: ${event.appTheme}")
                 viewModelScope.launch { dataStore.setAppTheme(event.appTheme) }
                 _uiState.update { currentUiState ->
                     currentUiState.copy(appThemeDialogVisible = false)

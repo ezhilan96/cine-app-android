@@ -9,10 +9,10 @@ import retrofit2.http.GET
 interface AuthService {
 
     @GET("/authentication/token/new")
-    fun createRequestToken(): CreateRequestTokenResponse
+    suspend fun createRequestToken(): CreateRequestTokenResponse
 
     @GET("/authentication/session/new")
-    fun createSession(@Body createSessionRequest: CreateSessionRequest): CreateSessionResponse
+    suspend fun createSession(@Body createSessionRequest: CreateSessionRequest): CreateSessionResponse
 
 }
 

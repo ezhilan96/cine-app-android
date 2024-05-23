@@ -5,8 +5,11 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.sp
 import com.ezhilan.cine.R
 
 val defaultTypography = Typography()
@@ -68,6 +71,33 @@ fun getTypography(sizeFactor: Float) = Typography(
 data class TextStyles(
 
     val sizeFactor: Float = 1f,
+
+    //trending card
+    val trendingCardTitle: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_medium)),
+        fontSize = (sizeFactor * 16).sp,
+    ),
+    val trendingCardRating: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_medium)),
+        fontSize = (sizeFactor * 14).sp,
+    ),
+    val trendingCardMediaType: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_bold)),
+        fontSize = (sizeFactor * 10).sp,
+    ),
+    val trendingCardYear: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_light)),
+        fontSize = (sizeFactor * 12).sp,
+    ),
+    val trendingCardGenre: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+        fontSize = (sizeFactor * 12).sp,
+    ),
+    val trendingCardOverview: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_thin)),
+        fontSize = (sizeFactor * 10).sp,
+        fontStyle = FontStyle.Italic,
+    ),
 )
 
 val LocalTextStyle = compositionLocalOf { TextStyles() }

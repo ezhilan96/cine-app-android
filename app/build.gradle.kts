@@ -31,12 +31,12 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-            resValue(type = "string", name = "base_url", value = "https://api.themoviedb.org/3/")
+            resValue(type = "string", name = "base_url", value = "https://api.themoviedb.org/")
         }
 
         debug {
             isMinifyEnabled = false
-            resValue(type = "string", name = "base_url", value = "https://api.themoviedb.org/3/")
+            resValue(type = "string", name = "base_url", value = "https://api.themoviedb.org/")
             versionNameSuffix = ".debug"
         }
     }

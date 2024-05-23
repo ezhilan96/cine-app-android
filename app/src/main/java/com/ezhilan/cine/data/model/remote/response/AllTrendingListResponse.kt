@@ -2,12 +2,12 @@ package com.ezhilan.cine.data.model.remote.response
 
 data class AllTrendingListResponse(
     val page: Int?,
-    val results: List<Result?>?,
+    val results: List<AllTrendingListDetailResponse?>?,
     val total_pages: Int?,
     val total_results: Int?
 )
 
-data class Result(
+data class AllTrendingListDetailResponse(
     val adult: Boolean?,
     val backdrop_path: String?,
     val first_air_date: String?,
