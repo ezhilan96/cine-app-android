@@ -14,9 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class TrendingNavigationItem {
-    ALERT,
-    TIME_WINDOW_DD,
-    LANGUAGE_DD,
+    ALERT, TIME_WINDOW_DD, LANGUAGE_DD,
 }
 
 val timeWindowList = listOf("day", "week")
@@ -38,6 +36,7 @@ data class TrendingScreenUiState(
 }
 
 sealed class TrendingScreenUiEvent {
+    data object OnRefresh : TrendingScreenUiEvent()
     data object ShowTimeWindowDD : TrendingScreenUiEvent()
     data class OnTimeWindowSelected(val index: Int) : TrendingScreenUiEvent()
     data object ShowLanguageDD : TrendingScreenUiEvent()
@@ -97,6 +96,9 @@ class TrendingScreenViewModel @Inject constructor(
 
     override fun onUiEvent(event: TrendingScreenUiEvent) {
         when (event) {
+
+            TrendingScreenUiEvent.OnRefresh -> refreshScreen()
+
             TrendingScreenUiEvent.ShowTimeWindowDD -> updateUiState { currentState ->
                 currentState.copy(screenStack = currentState.screenStack.toMutableList().apply {
                     add(TrendingNavigationItem.TIME_WINDOW_DD)

@@ -1,9 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.ezhilan.cine.presentation.screens.home.dashboard.trending
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,20 +46,45 @@ import com.ezhilan.cine.domain.entity.TrendingData
 import com.ezhilan.cine.presentation.config.CineTheme
 import com.ezhilan.cine.presentation.config.spacing
 import com.ezhilan.cine.presentation.config.textStyle
+import com.ezhilan.cine.presentation.screens.core.component.PullToRefreshContainer
+import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.RotatingHourGlass
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.FullScreenCarousel
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.MediaList
+import com.ezhilan.cine.presentation.util.enableGesture
 
 @Composable
 fun TrendingDestination(
     modifier: Modifier = Modifier,
     viewModel: TrendingScreenViewModel = hiltViewModel(),
 ) {
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    TrendingScreen(
-        modifier = modifier,
-        uiState = uiState.value,
-        uiEvent = viewModel::onUiEvent,
-    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Box(modifier = modifier.fillMaxSize()) {
+        PullToRefreshContainer(
+            modifier = modifier.fillMaxSize(),
+            isLoading = uiState.isLoading,
+            onRefresh = { viewModel.onUiEvent(TrendingScreenUiEvent.OnRefresh) },
+        ) {
+            TrendingScreen(
+                modifier = modifier,
+                uiState = uiState,
+                uiEvent = viewModel::onUiEvent,
+            )
+        }
+
+        if (uiState.isLoading) {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.75f))
+            ) {
+                RotatingHourGlass(
+                    modifier = modifier
+                        .align(Alignment.Center)
+                        .size(MaterialTheme.spacing.grid5)
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -66,7 +94,7 @@ fun TrendingScreen(
     uiEvent: (TrendingScreenUiEvent) -> Unit,
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.enableGesture(!uiState.isLoading),
         topBar = {
             TopAppBar(
                 title = {
@@ -225,6 +253,7 @@ fun TrendingScreen(
                 }
             }
             MediaList(trendingList = uiState.trendingTvList)
+            Spacer(modifier = modifier.height(MaterialTheme.spacing.grid1))
         }
     }
 }
@@ -235,6 +264,7 @@ private fun TrendingScreenPreview() {
     CineTheme {
         TrendingScreen(
             uiState = TrendingScreenUiState(
+                isLoading = true,
                 allTrendingList = listOf(
                     TrendingData(
                         id = "",

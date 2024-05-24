@@ -33,7 +33,7 @@ fun BackdropImage(modifier: Modifier = Modifier, imagePath: String) {
                 RotatingHourGlass(
                     modifier = modifier
                         .align(Alignment.Center)
-                        .size(MaterialTheme.spacing.unit50)
+                        .size(MaterialTheme.spacing.grid3)
                 )
             } else {
                 Image(
