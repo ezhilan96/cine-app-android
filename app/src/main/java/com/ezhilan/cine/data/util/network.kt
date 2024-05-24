@@ -1,7 +1,7 @@
 package com.ezhilan.cine.data.util
 
 import com.ezhilan.cine.R
-import com.ezhilan.cine.data.model.remote.response.ErrorResponse
+import com.ezhilan.cine.data.model.remote.response.core.ErrorResponse
 import com.ezhilan.cine.presentation.util.UiText
 import com.ezhilan.cine.presentation.util.toUiText
 import retrofit2.HttpException

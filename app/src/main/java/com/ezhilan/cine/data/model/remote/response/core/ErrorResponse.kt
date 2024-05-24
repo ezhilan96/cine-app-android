@@ -1,4 +1,4 @@
-package com.ezhilan.cine.data.model.remote.response
+package com.ezhilan.cine.data.model.remote.response.core
 
 import com.google.gson.Gson
 import okhttp3.ResponseBody

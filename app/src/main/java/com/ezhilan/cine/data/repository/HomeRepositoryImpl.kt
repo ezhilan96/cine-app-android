@@ -3,9 +3,13 @@ package com.ezhilan.cine.data.repository
 import com.ezhilan.cine.core.di.IoDispatcher
 import com.ezhilan.cine.data.dataSource.local.dataStore.UserPreferencesDataStore
 import com.ezhilan.cine.data.dataSource.remote.HomeService
-import com.ezhilan.cine.data.model.remote.response.AllTrendingListResponse
 import com.ezhilan.cine.data.model.remote.response.Genre
 import com.ezhilan.cine.data.model.remote.response.GenreResponse
+import com.ezhilan.cine.data.model.remote.response.core.ListResponse
+import com.ezhilan.cine.data.model.remote.response.trending.AllTrendingResult
+import com.ezhilan.cine.data.model.remote.response.trending.TrendingMovieResult
+import com.ezhilan.cine.data.model.remote.response.trending.TrendingPeopleResult
+import com.ezhilan.cine.data.model.remote.response.trending.TrendingTvResult
 import com.ezhilan.cine.data.util.DataState
 import com.ezhilan.cine.domain.repository.AuthRepository
 import com.ezhilan.cine.domain.repository.HomeRepository
@@ -34,32 +38,35 @@ class HomeRepositoryImpl @Inject constructor(
     }
 
     override fun getAllTrending(
-        timeWindow: String,
-        language: String,
-    ): Flow<DataState<AllTrendingListResponse>> = executeRemoteCall {
-        homeService.getAllTrending(timeWindow, language)
+        timeWindow: String
+    ): Flow<DataState<ListResponse<AllTrendingResult>>> = executeRemoteCall {
+        homeService.getAllTrending(timeWindow)
     }
 
     override fun getTrendingMovies(
-        timeWindow: String,
-        language: String,
-    ): Flow<DataState<AllTrendingListResponse>> = executeRemoteCall {
-        homeService.getTrendingMovies(timeWindow, language)
+        timeWindow: String
+    ): Flow<DataState<ListResponse<TrendingMovieResult>>> = executeRemoteCall {
+        homeService.getTrendingMovies(timeWindow)
     }
 
     override fun getTrendingTv(
-        timeWindow: String,
-        language: String,
-    ): Flow<DataState<AllTrendingListResponse>> = executeRemoteCall {
-        homeService.getTrendingTv(timeWindow, language)
+        timeWindow: String
+    ): Flow<DataState<ListResponse<TrendingTvResult>>> = executeRemoteCall {
+        homeService.getTrendingTv(timeWindow)
+    }
+
+    override fun getTrendingPeople(
+        timeWindow: String
+    ): Flow<DataState<ListResponse<TrendingPeopleResult>>> = executeRemoteCall {
+        homeService.getTrendingPeople(timeWindow)
     }
 
     override fun getMovieGenres(): Flow<DataState<GenreResponse>> = executeRemoteCall {
-        homeService.getMovieGeneres()
+        homeService.getMovieGenres()
     }
 
     override fun getTvGenres(): Flow<DataState<GenreResponse>> = executeRemoteCall {
-        homeService.getTvGeneres()
+        homeService.getTvGenres()
     }
 
 }

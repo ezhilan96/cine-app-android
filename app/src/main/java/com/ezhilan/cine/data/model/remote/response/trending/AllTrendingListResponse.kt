@@ -1,13 +1,8 @@
-package com.ezhilan.cine.data.model.remote.response
+package com.ezhilan.cine.data.model.remote.response.trending
 
-data class AllTrendingListResponse(
-    val page: Int?,
-    val results: List<AllTrendingListDetailResponse?>?,
-    val total_pages: Int?,
-    val total_results: Int?
-)
+interface TrendingResult
 
-data class AllTrendingListDetailResponse(
+data class AllTrendingResult(
     val adult: Boolean?,
     val backdrop_path: String?,
     val first_air_date: String?,
@@ -27,4 +22,4 @@ data class AllTrendingListDetailResponse(
     val video: Boolean?,
     val vote_average: Double?,
     val vote_count: Int?
-)
+): TrendingResult

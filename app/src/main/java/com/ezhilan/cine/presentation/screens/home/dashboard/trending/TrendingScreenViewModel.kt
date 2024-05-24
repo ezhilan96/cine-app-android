@@ -30,6 +30,7 @@ data class TrendingScreenUiState(
     val allTrendingList: List<TrendingData> = listOf(),
     val trendingMovieList: List<TrendingData> = listOf(),
     val trendingTvList: List<TrendingData> = listOf(),
+    val trendingPeopleList: List<TrendingData> = listOf(),
     val genres: List<Genre> = listOf(),
 ) : ScreenUiState {
     override fun copyWith(isLoading: Boolean): ScreenUiState = copy(isLoading = isLoading)
@@ -56,8 +57,7 @@ class TrendingScreenViewModel @Inject constructor(
     private fun refreshScreen() {
         viewModelScope.launch {
             getAllTrending(
-                timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
-                language = uiState.value.languageList[uiState.value.selectedLanguageIndex],
+                timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex]
             ).collectDataState { dataState ->
                 updateUiState { currentState ->
                     currentState.copy(
@@ -68,7 +68,6 @@ class TrendingScreenViewModel @Inject constructor(
                     getAllTrending(
                         mediaType = MediaType.movie,
                         timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
-                        language = uiState.value.languageList[uiState.value.selectedLanguageIndex],
                     ).collectDataState { dataState ->
                         updateUiState { currentState ->
                             currentState.copy(
@@ -79,12 +78,23 @@ class TrendingScreenViewModel @Inject constructor(
                             getAllTrending(
                                 mediaType = MediaType.tv,
                                 timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
-                                language = uiState.value.languageList[uiState.value.selectedLanguageIndex],
                             ).collectDataState { dataState ->
                                 updateUiState { currentState ->
                                     currentState.copy(
                                         trendingTvList = dataState.data,
                                     )
+                                }
+                                viewModelScope.launch {
+                                    getAllTrending(
+                                        mediaType = MediaType.person,
+                                        timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
+                                    ).collectDataState { dataState ->
+                                        updateUiState { currentState ->
+                                            currentState.copy(
+                                                trendingPeopleList = dataState.data,
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

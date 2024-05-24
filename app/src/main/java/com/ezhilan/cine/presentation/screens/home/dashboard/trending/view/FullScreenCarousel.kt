@@ -138,7 +138,7 @@ fun FullScreenCarousel(
                                     )
                                     Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
                                     Text(
-                                        text = trendingList[page].rating,
+                                        text = trendingList[page].rating?:"-",
                                         style = MaterialTheme.textStyle.trendingCarouselRating,
                                         maxLines = 1,
                                     )
@@ -161,19 +161,19 @@ fun FullScreenCarousel(
                                 )
                                 Text(text = " • ")
                                 Text(
-                                    text = trendingList[page].releaseYear,
+                                    text = trendingList[page].releaseYear?:"-",
                                     style = MaterialTheme.textStyle.trendingCarouselYear,
                                 )
                                 Text(text = " • ")
                                 Text(
-                                    text = trendingList[page].genres.mapNotNull { it.name }
-                                        .joinToString(", "),
+                                    text = trendingList[page].genres?.mapNotNull { it.name }
+                                        ?.joinToString(", ")?:"-",
                                     style = MaterialTheme.textStyle.trendingCarouselGenre, maxLines = 1,
                                 )
                             }
                             Text(
                                 modifier = modifier.weight(1f),
-                                text = trendingList[page].overview,
+                                text = trendingList[page].overview?:"-",
                                 style = MaterialTheme.textStyle.trendingCarouselOverview,
                                 overflow = TextOverflow.Ellipsis,
                             )

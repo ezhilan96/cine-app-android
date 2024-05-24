@@ -2,16 +2,18 @@ package com.ezhilan.cine.domain.entity
 
 import com.ezhilan.cine.data.model.remote.response.Genre
 
-enum class MediaType { tv, movie, all }
+enum class MediaType { tv, movie, person, all }
 
 data class TrendingData(
     val id: String,
     val title: String,
-    val overview: String,
-    val backdropPath: String?,
-    val posterPath: String?,
-    val releaseYear: String,
+    val overview: String? = null,
+    val backdropPath: String? = null,
+    val posterPath: String? = null,
+    val profilePath: String? = null,
+    val releaseYear: String? = null,
     val mediaType: MediaType,
-    val genres: List<Genre>,
-    val rating: String,
+    val genres: List<Genre>? = null,
+    val rating: String? = null,
+    val peopleType: String? = null,
 )

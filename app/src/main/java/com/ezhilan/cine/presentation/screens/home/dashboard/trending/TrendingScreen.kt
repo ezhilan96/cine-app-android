@@ -50,6 +50,7 @@ import com.ezhilan.cine.presentation.screens.core.component.PullToRefreshContain
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.RotatingHourGlass
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.FullScreenCarousel
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.MediaList
+import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.ProfileList
 import com.ezhilan.cine.presentation.util.enableGesture
 
 @Composable
@@ -210,52 +211,101 @@ fun TrendingScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(safeAreaPadding),
         ) {
-            FullScreenCarousel(trendingList = uiState.allTrendingList)
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(start = MaterialTheme.spacing.grid1),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(text = "Movies", style = MaterialTheme.textStyle.dashboardTitle)
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(
-                        text = "View all",
-                        style = LocalTextStyle.current.copy(textDecoration = TextDecoration.Underline),
-                    )
-                    Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_next),
-                        contentDescription = null,
-                    )
-                }
+            if (uiState.allTrendingList.isNotEmpty()) {
+                FullScreenCarousel(trendingList = uiState.allTrendingList)
             }
-            MediaList(trendingList = uiState.trendingMovieList)
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(start = MaterialTheme.spacing.grid1),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(text = "Tv", style = MaterialTheme.textStyle.dashboardTitle)
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(
-                        text = "View all",
-                        style = LocalTextStyle.current.copy(textDecoration = TextDecoration.Underline),
-                    )
-                    Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_next),
-                        contentDescription = null,
-                    )
+            if (uiState.trendingMovieList.isNotEmpty()) {
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(start = MaterialTheme.spacing.grid1),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(text = "Movies", style = MaterialTheme.textStyle.dashboardTitle)
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(
+                            text = "View all",
+                            style = LocalTextStyle.current.copy(textDecoration = TextDecoration.Underline),
+                        )
+                        Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_next),
+                            contentDescription = null,
+                        )
+                    }
                 }
+                MediaList(trendingList = uiState.trendingMovieList)
             }
-            MediaList(trendingList = uiState.trendingTvList)
+            if (uiState.trendingTvList.isNotEmpty()) {
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(start = MaterialTheme.spacing.grid1),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(text = "Tv", style = MaterialTheme.textStyle.dashboardTitle)
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(
+                            text = "View all",
+                            style = LocalTextStyle.current.copy(textDecoration = TextDecoration.Underline),
+                        )
+                        Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_next),
+                            contentDescription = null,
+                        )
+                    }
+                }
+                MediaList(trendingList = uiState.trendingTvList)
+            }
+            if (uiState.trendingPeopleList.isNotEmpty()) {
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(start = MaterialTheme.spacing.grid1),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(text = "People", style = MaterialTheme.textStyle.dashboardTitle)
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(
+                            text = "View all",
+                            style = LocalTextStyle.current.copy(textDecoration = TextDecoration.Underline),
+                        )
+                        Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_next),
+                            contentDescription = null,
+                        )
+                    }
+                }
+                ProfileList(trendingList = uiState.trendingPeopleList)
+            }
             Spacer(modifier = modifier.height(MaterialTheme.spacing.grid1))
         }
     }
+}
+
+@Composable
+fun AllTrendingList(modifier: Modifier = Modifier) {
+
+}
+
+@Composable
+fun TrendingMovieList(modifier: Modifier = Modifier) {
+
+}
+
+@Composable
+fun TrendingTvList(modifier: Modifier = Modifier) {
+
+}
+
+@Composable
+fun TrendingPeopleList(modifier: Modifier = Modifier) {
+
 }
 
 @Preview

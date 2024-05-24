@@ -1,7 +1,7 @@
 package com.ezhilan.cine.domain.repository.core
 
 import com.ezhilan.cine.R
-import com.ezhilan.cine.data.model.remote.response.ErrorResponse
+import com.ezhilan.cine.data.model.remote.response.core.ErrorResponse
 import com.ezhilan.cine.data.util.DataState
 import com.ezhilan.cine.data.util.getErrorMessage
 import com.ezhilan.cine.presentation.util.UiText
