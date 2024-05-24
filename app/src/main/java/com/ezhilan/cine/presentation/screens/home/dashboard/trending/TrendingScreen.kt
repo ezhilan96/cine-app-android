@@ -51,6 +51,7 @@ import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.FullScreenCarousel
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.MediaList
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.ProfileList
+import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.TrendingListDialog
 import com.ezhilan.cine.presentation.util.enableGesture
 
 @Composable
@@ -85,6 +86,19 @@ fun TrendingDestination(
                 )
             }
         }
+    }
+
+    if (uiState.screenStack.contains(TrendingNavigationItem.VIEW_ALL_LIST)) {
+        TrendingListDialog(
+            trendingList = when (uiState.selectedMediaType) {
+                MediaType.all -> uiState.allTrendingList
+                MediaType.movie -> uiState.trendingMovieList
+                MediaType.tv -> uiState.trendingTvList
+                MediaType.person -> uiState.trendingPeopleList
+            },
+            mediaType = uiState.selectedMediaType,
+            onDismiss = { viewModel.onUiEvent(TrendingScreenUiEvent.Dismiss) },
+        )
     }
 }
 
@@ -212,7 +226,10 @@ fun TrendingScreen(
                 .padding(safeAreaPadding),
         ) {
             if (uiState.allTrendingList.isNotEmpty()) {
-                FullScreenCarousel(trendingList = uiState.allTrendingList)
+                FullScreenCarousel(
+                    trendingList = uiState.allTrendingList,
+                    onViewAllClick = { uiEvent(TrendingScreenUiEvent.OnViewAllPressed(MediaType.all)) },
+                )
             }
             if (uiState.trendingMovieList.isNotEmpty()) {
                 Row(
@@ -223,7 +240,7 @@ fun TrendingScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(text = "Movies", style = MaterialTheme.textStyle.dashboardTitle)
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(onClick = { uiEvent(TrendingScreenUiEvent.OnViewAllPressed(MediaType.movie)) }) {
                         Text(
                             text = "View all",
                             style = LocalTextStyle.current.copy(textDecoration = TextDecoration.Underline),
@@ -245,8 +262,8 @@ fun TrendingScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text(text = "Tv", style = MaterialTheme.textStyle.dashboardTitle)
-                    TextButton(onClick = { /*TODO*/ }) {
+                    Text(text = "TV Shows", style = MaterialTheme.textStyle.dashboardTitle)
+                    TextButton(onClick = { uiEvent(TrendingScreenUiEvent.OnViewAllPressed(MediaType.tv)) }) {
                         Text(
                             text = "View all",
                             style = LocalTextStyle.current.copy(textDecoration = TextDecoration.Underline),
@@ -269,7 +286,7 @@ fun TrendingScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(text = "People", style = MaterialTheme.textStyle.dashboardTitle)
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(onClick = { uiEvent(TrendingScreenUiEvent.OnViewAllPressed(MediaType.person)) }) {
                         Text(
                             text = "View all",
                             style = LocalTextStyle.current.copy(textDecoration = TextDecoration.Underline),
@@ -286,26 +303,6 @@ fun TrendingScreen(
             Spacer(modifier = modifier.height(MaterialTheme.spacing.grid1))
         }
     }
-}
-
-@Composable
-fun AllTrendingList(modifier: Modifier = Modifier) {
-
-}
-
-@Composable
-fun TrendingMovieList(modifier: Modifier = Modifier) {
-
-}
-
-@Composable
-fun TrendingTvList(modifier: Modifier = Modifier) {
-
-}
-
-@Composable
-fun TrendingPeopleList(modifier: Modifier = Modifier) {
-
 }
 
 @Preview

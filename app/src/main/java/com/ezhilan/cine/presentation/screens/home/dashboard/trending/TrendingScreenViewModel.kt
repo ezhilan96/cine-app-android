@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class TrendingNavigationItem {
-    ALERT, TIME_WINDOW_DD, LANGUAGE_DD,
+    ALERT, TIME_WINDOW_DD, LANGUAGE_DD, VIEW_ALL_LIST
 }
 
 val timeWindowList = listOf("day", "week")
@@ -31,6 +31,7 @@ data class TrendingScreenUiState(
     val trendingMovieList: List<TrendingData> = listOf(),
     val trendingTvList: List<TrendingData> = listOf(),
     val trendingPeopleList: List<TrendingData> = listOf(),
+    val selectedMediaType: MediaType = MediaType.all,
     val genres: List<Genre> = listOf(),
 ) : ScreenUiState {
     override fun copyWith(isLoading: Boolean): ScreenUiState = copy(isLoading = isLoading)
@@ -39,6 +40,7 @@ data class TrendingScreenUiState(
 sealed class TrendingScreenUiEvent {
     data object OnRefresh : TrendingScreenUiEvent()
     data object ShowTimeWindowDD : TrendingScreenUiEvent()
+    data class OnViewAllPressed(val mediaType: MediaType) : TrendingScreenUiEvent()
     data class OnTimeWindowSelected(val index: Int) : TrendingScreenUiEvent()
     data object ShowLanguageDD : TrendingScreenUiEvent()
     data class OnLanguageSelected(val index: Int) : TrendingScreenUiEvent()
@@ -108,6 +110,17 @@ class TrendingScreenViewModel @Inject constructor(
         when (event) {
 
             TrendingScreenUiEvent.OnRefresh -> refreshScreen()
+
+            is TrendingScreenUiEvent.OnViewAllPressed -> {
+                updateUiState { currentState ->
+                    currentState.copy(
+                        selectedMediaType = event.mediaType,
+                        screenStack = currentState.screenStack.toMutableList().apply {
+                            add(TrendingNavigationItem.VIEW_ALL_LIST)
+                        },
+                    )
+                }
+            }
 
             TrendingScreenUiEvent.ShowTimeWindowDD -> updateUiState { currentState ->
                 currentState.copy(screenStack = currentState.screenStack.toMutableList().apply {
