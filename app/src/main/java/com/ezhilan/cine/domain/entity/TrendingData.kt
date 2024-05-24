@@ -2,9 +2,9 @@ package com.ezhilan.cine.domain.entity
 
 import com.ezhilan.cine.data.model.remote.response.Genre
 
-enum class MediaType { tv, movie, unknown }
+enum class MediaType { tv, movie, all }
 
-data class AllTrendingData(
+data class TrendingData(
     val id: String,
     val title: String,
     val overview: String,

@@ -3,9 +3,9 @@ package com.ezhilan.cine.presentation.screens.home.dashboard.trending
 import androidx.lifecycle.viewModelScope
 import com.ezhilan.cine.core.Constants
 import com.ezhilan.cine.data.model.remote.response.Genre
-import com.ezhilan.cine.domain.entity.AllTrendingData
+import com.ezhilan.cine.domain.entity.MediaType
+import com.ezhilan.cine.domain.entity.TrendingData
 import com.ezhilan.cine.domain.useCases.home.GetAllTrendingUseCase
-import com.ezhilan.cine.domain.useCases.home.GetGenresUseCase
 import com.ezhilan.cine.presentation.screens.core.ScreenUiState
 import com.ezhilan.cine.presentation.screens.core.ScreenViewModel
 import com.ezhilan.cine.presentation.util.UiText
@@ -14,8 +14,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class TrendingNavigationItem {
-    ALERT, TIME_WINDOW_DD, LANGUAGE_DD,
+    ALERT,
+    TIME_WINDOW_DD,
+    LANGUAGE_DD,
 }
+
+val timeWindowList = listOf("day", "week")
 
 data class TrendingScreenUiState(
     override val isLoading: Boolean = true,
@@ -25,7 +29,9 @@ data class TrendingScreenUiState(
     val languageList: List<String> = Constants.lanuages,
     val selectedTimeWindowIndex: Int = 0,
     val selectedLanguageIndex: Int = 0,
-    val trendingList: List<AllTrendingData> = listOf(),
+    val allTrendingList: List<TrendingData> = listOf(),
+    val trendingMovieList: List<TrendingData> = listOf(),
+    val trendingTvList: List<TrendingData> = listOf(),
     val genres: List<Genre> = listOf(),
 ) : ScreenUiState {
     override fun copyWith(isLoading: Boolean): ScreenUiState = copy(isLoading = isLoading)
@@ -45,12 +51,45 @@ class TrendingScreenViewModel @Inject constructor(
 ) : ScreenViewModel<TrendingScreenUiState, TrendingScreenUiEvent>(TrendingScreenUiState()) {
 
     init {
+        refreshScreen()
+    }
+
+    private fun refreshScreen() {
         viewModelScope.launch {
-            getAllTrending().collectDataState { dataState ->
+            getAllTrending(
+                timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
+                language = uiState.value.languageList[uiState.value.selectedLanguageIndex],
+            ).collectDataState { dataState ->
                 updateUiState { currentState ->
                     currentState.copy(
-                        trendingList = dataState.data,
+                        allTrendingList = dataState.data,
                     )
+                }
+                viewModelScope.launch {
+                    getAllTrending(
+                        mediaType = MediaType.movie,
+                        timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
+                        language = uiState.value.languageList[uiState.value.selectedLanguageIndex],
+                    ).collectDataState { dataState ->
+                        updateUiState { currentState ->
+                            currentState.copy(
+                                trendingMovieList = dataState.data,
+                            )
+                        }
+                        viewModelScope.launch {
+                            getAllTrending(
+                                mediaType = MediaType.tv,
+                                timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
+                                language = uiState.value.languageList[uiState.value.selectedLanguageIndex],
+                            ).collectDataState { dataState ->
+                                updateUiState { currentState ->
+                                    currentState.copy(
+                                        trendingTvList = dataState.data,
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -64,13 +103,16 @@ class TrendingScreenViewModel @Inject constructor(
                 })
             }
 
-            is TrendingScreenUiEvent.OnTimeWindowSelected -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        remove(TrendingNavigationItem.TIME_WINDOW_DD)
-                    },
-                    selectedTimeWindowIndex = event.index,
-                )
+            is TrendingScreenUiEvent.OnTimeWindowSelected -> {
+                updateUiState { currentState ->
+                    currentState.copy(
+                        screenStack = currentState.screenStack.toMutableList().apply {
+                            remove(TrendingNavigationItem.TIME_WINDOW_DD)
+                        },
+                        selectedTimeWindowIndex = event.index,
+                    )
+                }
+                refreshScreen()
             }
 
             TrendingScreenUiEvent.ShowLanguageDD -> updateUiState { currentState ->
@@ -79,13 +121,16 @@ class TrendingScreenViewModel @Inject constructor(
                 })
             }
 
-            is TrendingScreenUiEvent.OnLanguageSelected -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        remove(TrendingNavigationItem.LANGUAGE_DD)
-                    },
-                    selectedLanguageIndex = event.index,
-                )
+            is TrendingScreenUiEvent.OnLanguageSelected -> {
+                updateUiState { currentState ->
+                    currentState.copy(
+                        screenStack = currentState.screenStack.toMutableList().apply {
+                            remove(TrendingNavigationItem.LANGUAGE_DD)
+                        },
+                        selectedLanguageIndex = event.index,
+                    )
+                }
+                refreshScreen()
             }
 
             TrendingScreenUiEvent.Dismiss -> updateUiState { currentState ->

@@ -40,6 +40,20 @@ class HomeRepositoryImpl @Inject constructor(
         homeService.getAllTrending(timeWindow, language)
     }
 
+    override fun getTrendingMovies(
+        timeWindow: String,
+        language: String,
+    ): Flow<DataState<AllTrendingListResponse>> = executeRemoteCall {
+        homeService.getTrendingMovies(timeWindow, language)
+    }
+
+    override fun getTrendingTv(
+        timeWindow: String,
+        language: String,
+    ): Flow<DataState<AllTrendingListResponse>> = executeRemoteCall {
+        homeService.getTrendingTv(timeWindow, language)
+    }
+
     override fun getMovieGenres(): Flow<DataState<GenreResponse>> = executeRemoteCall {
         homeService.getMovieGeneres()
     }

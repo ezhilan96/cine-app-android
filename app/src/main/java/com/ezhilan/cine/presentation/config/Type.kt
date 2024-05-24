@@ -71,32 +71,54 @@ fun getTypography(sizeFactor: Float) = Typography(
 data class TextStyles(
 
     val sizeFactor: Float = 1f,
+    val dashboardTitle: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_bold)),
+        fontSize = (sizeFactor * 16).sp,
+    ),
 
-    //trending card
-    val trendingCardTitle: TextStyle = TextStyle(
+    //trending fullscreen card
+    val trendingCarouselTitle: TextStyle = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_medium)),
         fontSize = (sizeFactor * 16).sp,
     ),
-    val trendingCardRating: TextStyle = TextStyle(
+    val trendingCarouselRating: TextStyle = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_medium)),
         fontSize = (sizeFactor * 14).sp,
     ),
-    val trendingCardMediaType: TextStyle = TextStyle(
+    val trendingCarouselMediaType: TextStyle = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_bold)),
         fontSize = (sizeFactor * 10).sp,
     ),
-    val trendingCardYear: TextStyle = TextStyle(
+    val trendingCarouselYear: TextStyle = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_light)),
         fontSize = (sizeFactor * 12).sp,
     ),
-    val trendingCardGenre: TextStyle = TextStyle(
+    val trendingCarouselGenre: TextStyle = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_regular)),
         fontSize = (sizeFactor * 12).sp,
     ),
-    val trendingCardOverview: TextStyle = TextStyle(
+    val trendingCarouselOverview: TextStyle = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_thin)),
         fontSize = (sizeFactor * 10).sp,
         fontStyle = FontStyle.Italic,
+    ),
+
+    //trending item
+    val trendingCardMediaType: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_bold)),
+        fontSize = (sizeFactor * 8).sp,
+    ),
+    val trendingCardYear: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_light)),
+        fontSize = (sizeFactor * 10).sp,
+    ),
+    val trendingCardRating: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_medium)),
+        fontSize = (sizeFactor * 10).sp,
+    ),
+    val trendingCardTitle: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_medium)),
+        fontSize = (sizeFactor * 14).sp,
     ),
 )
 

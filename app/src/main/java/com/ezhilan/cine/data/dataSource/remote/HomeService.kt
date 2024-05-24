@@ -14,6 +14,18 @@ interface HomeService {
         @Query(value = "language") language: String,
     ): AllTrendingListResponse
 
+    @GET("/3/trending/movie/{timeWindow}")
+    suspend fun getTrendingMovies(
+        @Path(value = "timeWindow") time: String,
+        @Query(value = "language") language: String,
+    ): AllTrendingListResponse
+
+    @GET("/3/trending/tv/{timeWindow}")
+    suspend fun getTrendingTv(
+        @Path(value = "timeWindow") time: String,
+        @Query(value = "language") language: String,
+    ): AllTrendingListResponse
+
     @GET("3/genre/movie/list")
     suspend fun getMovieGeneres(): GenreResponse
 

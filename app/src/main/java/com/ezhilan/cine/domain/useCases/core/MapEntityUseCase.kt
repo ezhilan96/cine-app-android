@@ -4,8 +4,8 @@ import com.ezhilan.cine.core.di.IoDispatcher
 import com.ezhilan.cine.data.model.remote.response.AllTrendingListDetailResponse
 import com.ezhilan.cine.data.model.remote.response.Genre
 import com.ezhilan.cine.data.util.DataState
-import com.ezhilan.cine.domain.entity.AllTrendingData
 import com.ezhilan.cine.domain.entity.MediaType
+import com.ezhilan.cine.domain.entity.TrendingData
 import com.ezhilan.cine.domain.useCases.home.GetGenresUseCase
 import com.ezhilan.cine.presentation.util.AppTextActions
 import kotlinx.coroutines.CoroutineDispatcher
@@ -30,16 +30,16 @@ class MapEntityUseCase @Inject constructor(
         }
     }
 
-    suspend operator fun invoke(response: AllTrendingListDetailResponse): AllTrendingData? {
+    suspend operator fun invoke(response: AllTrendingListDetailResponse): TrendingData? {
 
         return try {
 
             val mediaType = try {
                 MediaType.valueOf(response.media_type!!)
             } catch (e: Exception) {
-                MediaType.unknown
+                MediaType.all
             }
-            AllTrendingData(
+            TrendingData(
                 id = response.id?.toString()!!,
                 mediaType = mediaType,
                 title = if (response.title.isNullOrEmpty()) {
@@ -50,7 +50,13 @@ class MapEntityUseCase @Inject constructor(
                 overview = response.overview ?: "-",
                 backdropPath = response.backdrop_path?.ifEmpty { null },
                 posterPath = response.poster_path?.ifEmpty { null },
-                releaseYear = response.release_date?.split("-")?.first() ?: "-",
+                releaseYear = when (mediaType) {
+                    MediaType.movie -> response.release_date?.split("-")
+                        ?.first() ?: "-"
+                    MediaType.tv -> response.first_air_date?.split("-")
+                        ?.first() ?: "-"
+                    else -> "-"
+                },
                 genres = response.genre_ids?.map { id -> genres.find { it.id == id }!! }
                     ?: listOf(),
                 rating = if (response.vote_count == 0) {

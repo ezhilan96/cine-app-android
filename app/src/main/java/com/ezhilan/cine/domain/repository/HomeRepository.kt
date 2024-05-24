@@ -13,6 +13,14 @@ interface HomeRepository {
         timeWindow: String = "day",
         language: String = "en-US",
     ): Flow<DataState<AllTrendingListResponse>>
+    fun getTrendingMovies(
+        timeWindow: String = "day",
+        language: String = "en-US",
+    ): Flow<DataState<AllTrendingListResponse>>
+    fun getTrendingTv(
+        timeWindow: String = "day",
+        language: String = "en-US",
+    ): Flow<DataState<AllTrendingListResponse>>
 
     fun getMovieGenres(): Flow<DataState<GenreResponse>>
     fun getTvGenres(): Flow<DataState<GenreResponse>>
