@@ -23,7 +23,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -90,14 +89,8 @@ fun TrendingDestination(
 
     if (uiState.screenStack.contains(TrendingNavigationItem.VIEW_ALL_LIST)) {
         TrendingListDialog(
-            trendingList = when (uiState.selectedMediaType) {
-                MediaType.all -> uiState.allTrendingList
-                MediaType.movie -> uiState.trendingMovieList
-                MediaType.tv -> uiState.trendingTvList
-                MediaType.person -> uiState.trendingPeopleList
-            },
-            mediaType = uiState.selectedMediaType,
-            onDismiss = { viewModel.onUiEvent(TrendingScreenUiEvent.Dismiss) },
+            uiState = uiState,
+            uiEvent = viewModel::onUiEvent,
         )
     }
 }
@@ -111,112 +104,68 @@ fun TrendingScreen(
     Scaffold(
         modifier = modifier.enableGesture(!uiState.isLoading),
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            modifier = modifier.height(IntrinsicSize.Max),
-                            text = "Trending",
-                        )
-                        Spacer(modifier = modifier.width(MaterialTheme.spacing.unit4))
-                        ExposedDropdownMenuBox(
-                            modifier = modifier.padding(bottom = MaterialTheme.spacing.grid05),
-                            expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
-                            onExpandedChange = {
-                                if (!it) {
-                                    uiEvent(TrendingScreenUiEvent.Dismiss)
-                                }
-                            },
-                        ) {
-                            TextButton(
-                                modifier = modifier
-                                    .menuAnchor()
-                                    .height(MaterialTheme.spacing.grid2),
-                                onClick = { uiEvent(TrendingScreenUiEvent.ShowTimeWindowDD) },
-                                contentPadding = PaddingValues(0.dp),
-                                shape = MaterialTheme.shapes.extraSmall,
-                            ) {
-                                Text("[${uiState.timeWindowList[uiState.selectedTimeWindowIndex]}]")
-                            }
-                            DropdownMenu(
-                                expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
-                                onDismissRequest = { uiEvent(TrendingScreenUiEvent.Dismiss) },
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Row {
-                                            Text(text = "Today")
-                                            if (uiState.selectedTimeWindowIndex == 0) {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.ic_check),
-                                                    contentDescription = null,
-                                                )
-                                            }
-                                        }
-                                    },
-                                    onClick = { uiEvent(TrendingScreenUiEvent.OnTimeWindowSelected(0)) },
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Row {
-                                            Text(text = "This week")
-                                            if (uiState.selectedTimeWindowIndex == 1) {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.ic_check),
-                                                    contentDescription = null,
-                                                )
-                                            }
-                                        }
-                                    },
-                                    onClick = { uiEvent(TrendingScreenUiEvent.OnTimeWindowSelected(1)) },
-                                )
-                            }
-                        }
-                    }
-                },
-                actions = {
+            TopAppBar(title = {
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        modifier = modifier.height(IntrinsicSize.Max),
+                        text = "Trending",
+                    )
+                    Spacer(modifier = modifier.width(MaterialTheme.spacing.unit4))
                     ExposedDropdownMenuBox(
-                        expanded = uiState.screenStack.contains(TrendingNavigationItem.LANGUAGE_DD),
+                        modifier = modifier.padding(bottom = MaterialTheme.spacing.grid05),
+                        expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
                         onExpandedChange = {
                             if (!it) {
                                 uiEvent(TrendingScreenUiEvent.Dismiss)
                             }
                         },
                     ) {
-                        IconButton(modifier = modifier.menuAnchor(),
-                            onClick = { uiEvent(TrendingScreenUiEvent.ShowLanguageDD) }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_globe),
-                                contentDescription = null,
-                            )
+                        TextButton(
+                            modifier = modifier
+                                .menuAnchor()
+                                .height(MaterialTheme.spacing.grid2),
+                            onClick = { uiEvent(TrendingScreenUiEvent.ShowTimeWindowDD) },
+                            contentPadding = PaddingValues(0.dp),
+                            shape = MaterialTheme.shapes.extraSmall,
+                        ) {
+                            Text("[${uiState.timeWindowList[uiState.selectedTimeWindowIndex]}]")
                         }
                         DropdownMenu(
-                            expanded = uiState.screenStack.contains(TrendingNavigationItem.LANGUAGE_DD),
+                            expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
                             onDismissRequest = { uiEvent(TrendingScreenUiEvent.Dismiss) },
                         ) {
-                            uiState.languageList.forEachIndexed { index, language ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Row {
-                                            Text(text = language)
-                                            if (uiState.selectedLanguageIndex == index) {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.ic_check),
-                                                    contentDescription = null,
-                                                )
-                                            }
+                            DropdownMenuItem(
+                                text = {
+                                    Row {
+                                        Text(text = "Today")
+                                        if (uiState.selectedTimeWindowIndex == 0) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_check),
+                                                contentDescription = null,
+                                            )
                                         }
-                                    },
-                                    onClick = {
-                                        uiEvent(TrendingScreenUiEvent.OnLanguageSelected(index))
-                                    },
-                                )
-
-                            }
+                                    }
+                                },
+                                onClick = { uiEvent(TrendingScreenUiEvent.OnTimeWindowSelected(0)) },
+                            )
+                            DropdownMenuItem(
+                                text = {
+                                    Row {
+                                        Text(text = "This week")
+                                        if (uiState.selectedTimeWindowIndex == 1) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_check),
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    }
+                                },
+                                onClick = { uiEvent(TrendingScreenUiEvent.OnTimeWindowSelected(1)) },
+                            )
                         }
                     }
-                },
-            )
+                }
+            })
         },
     ) { safeAreaPadding ->
         Column(

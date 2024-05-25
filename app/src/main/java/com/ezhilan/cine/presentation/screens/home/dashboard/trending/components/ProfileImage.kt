@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -49,8 +50,9 @@ fun ProfileImage(modifier: Modifier = Modifier, imagePath: String) {
                     Image(
                         modifier = modifier
                             .align(Alignment.Center)
-                            .size(MaterialTheme.spacing.grid3),
-                        painter = painterResource(id = R.drawable.ic_corrupt_image),
+                            .fillMaxSize()
+                            .padding(MaterialTheme.spacing.grid3),
+                        painter = painterResource(id = R.drawable.ic_user),
                         contentDescription = null,
                     )
                 }

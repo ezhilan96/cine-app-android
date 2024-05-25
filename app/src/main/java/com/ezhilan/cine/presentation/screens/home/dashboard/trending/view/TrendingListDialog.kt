@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +31,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -42,26 +47,40 @@ import com.ezhilan.cine.presentation.config.CineTheme
 import com.ezhilan.cine.presentation.config.colors
 import com.ezhilan.cine.presentation.config.spacing
 import com.ezhilan.cine.presentation.config.textStyle
+import com.ezhilan.cine.presentation.screens.core.component.InfiniteLazyVerticalGrid
+import com.ezhilan.cine.presentation.screens.home.dashboard.trending.TrendingScreenUiEvent
+import com.ezhilan.cine.presentation.screens.home.dashboard.trending.TrendingScreenUiState
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.PosterImage
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.ProfileImage
+import com.ezhilan.cine.presentation.util.enableGesture
 import java.util.Locale
 
 @Composable
 fun TrendingListDialog(
     modifier: Modifier = Modifier,
-    trendingList: List<TrendingData>,
-    mediaType: MediaType,
-    onDismiss: () -> Unit,
+    uiState: TrendingScreenUiState,
+    uiEvent: (TrendingScreenUiEvent) -> Unit,
 ) {
+    val lazyGridState: LazyGridState = rememberLazyGridState()
+    val isListScrolledDown by remember {
+        derivedStateOf {
+            lazyGridState.firstVisibleItemIndex > 0
+        }
+    }
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { uiEvent(TrendingScreenUiEvent.Dismiss) },
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
-        Surface(modifier = modifier.fillMaxSize()) {
-            Column(modifier = modifier.fillMaxSize()) {
+        Surface(modifier = modifier
+            .fillMaxSize()
+            .enableGesture(!uiState.isLoading)) {
+            Column(
+                modifier = modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 TopAppBar(
                     navigationIcon = {
-                        IconButton(onClick = onDismiss) {
+                        IconButton(onClick = { uiEvent(TrendingScreenUiEvent.Dismiss) }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = null
@@ -70,7 +89,7 @@ fun TrendingListDialog(
                     },
                     title = {
                         Text(
-                            text = when (mediaType) {
+                            text = when (uiState.selectedMediaType) {
                                 MediaType.all -> "All trending"
                                 MediaType.movie -> "Trending Movies"
                                 MediaType.tv -> "Trending TV shows"
@@ -79,16 +98,22 @@ fun TrendingListDialog(
                         )
                     },
                 )
-
-                LazyVerticalGrid(
+                InfiniteLazyVerticalGrid(
                     modifier = modifier
-                        .fillMaxSize()
+                        .weight(1f)
                         .padding(horizontal = MaterialTheme.spacing.grid05),
+                    lazyGridState = lazyGridState,
                     columns = GridCells.Fixed(3),
+                    onLoadMore = { uiEvent(TrendingScreenUiEvent.OnLoadMore) },
                 ) {
-                    trendingList.forEach { trendingData ->
+                    when (uiState.selectedMediaType) {
+                        MediaType.all -> uiState.allTrendingList
+                        MediaType.movie -> uiState.trendingMovieList
+                        MediaType.tv -> uiState.trendingTvList
+                        MediaType.person -> uiState.trendingPeopleList
+                    }.forEach { trendingData ->
                         item {
-                            if (mediaType == MediaType.person) {
+                            if (uiState.selectedMediaType == MediaType.person) {
                                 PeopleItemView(
                                     modifier = modifier,
                                     trendingData = trendingData,
@@ -101,6 +126,14 @@ fun TrendingListDialog(
                             }
                         }
                     }
+                }
+
+                if (isListScrolledDown && uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = modifier
+                            .padding(MaterialTheme.spacing.grid1)
+                            .size(MaterialTheme.spacing.grid3),
+                    )
                 }
             }
         }
@@ -228,54 +261,8 @@ private fun AllTrendingListPreview() {
     CineTheme {
         Scaffold {
             TrendingListDialog(
-                trendingList = listOf(
-                    TrendingData(
-                        id = "",
-                        title = "Title",
-                        overview = "Overview",
-                        backdropPath = "/u1CqlLecfpcuOaugKi3ol9gDQHJ.jpg",
-                        posterPath = "/vlHJfLsduZiILN8eYdN57kHZTcQ.jpg",
-                        releaseYear = "2022",
-                        mediaType = MediaType.tv,
-                        genres = listOf(),
-                        rating = "7.8",
-                    ),
-                    TrendingData(
-                        id = "",
-                        title = "Title",
-                        overview = "Overview",
-                        backdropPath = "/u1CqlLecfpcuOaugKi3ol9gDQHJ.jpg",
-                        posterPath = "/vlHJfLsduZiILN8eYdN57kHZTcQ.jpg",
-                        releaseYear = "2022",
-                        mediaType = MediaType.tv,
-                        genres = listOf(),
-                        rating = "7.8",
-                    ),
-                    TrendingData(
-                        id = "",
-                        title = "Title",
-                        overview = "Overview",
-                        backdropPath = "/u1CqlLecfpcuOaugKi3ol9gDQHJ.jpg",
-                        posterPath = "/vlHJfLsduZiILN8eYdN57kHZTcQ.jpg",
-                        releaseYear = "2022",
-                        mediaType = MediaType.tv,
-                        genres = listOf(),
-                        rating = "7.8",
-                    ),
-                    TrendingData(
-                        id = "",
-                        title = "Title",
-                        overview = "Overview",
-                        backdropPath = "/u1CqlLecfpcuOaugKi3ol9gDQHJ.jpg",
-                        posterPath = "/vlHJfLsduZiILN8eYdN57kHZTcQ.jpg",
-                        releaseYear = "2022",
-                        mediaType = MediaType.tv,
-                        genres = listOf(),
-                        rating = "7.8",
-                    ),
-                ),
-                mediaType = MediaType.person,
-                onDismiss = {},
+                uiState = TrendingScreenUiState(),
+                uiEvent = {},
             )
         }
     }

@@ -1,6 +1,7 @@
 package com.ezhilan.cine.domain.useCases.core
 
-import com.ezhilan.cine.core.di.IoDispatcher
+import android.util.Log
+import com.ezhilan.cine.core.TAG
 import com.ezhilan.cine.data.model.remote.response.Genre
 import com.ezhilan.cine.data.model.remote.response.trending.AllTrendingResult
 import com.ezhilan.cine.data.model.remote.response.trending.TrendingMovieResult
@@ -12,34 +13,27 @@ import com.ezhilan.cine.domain.entity.MediaType
 import com.ezhilan.cine.domain.entity.TrendingData
 import com.ezhilan.cine.domain.useCases.home.GetGenresUseCase
 import com.ezhilan.cine.presentation.util.AppTextActions
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class MapEntityUseCase @Inject constructor(
     private val getGenres: GetGenresUseCase,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
-    lateinit var genres: List<Genre>
     private val appTextActions = AppTextActions()
+    private var genres: List<Genre> = listOf()
 
-    init {
-        CoroutineScope(ioDispatcher).launch {
-            getGenres().collect {
-                if (it is DataState.Success) {
-                    genres = it.data
-                }
-            }
+    suspend operator fun invoke(response: TrendingResult): Flow<TrendingData?> = flow {
+        if (genres.isEmpty()) {
+            genres = (getGenres().filter { it is DataState.Success }
+                .first() as? DataState.Success<List<Genre>>)?.data ?: listOf()
         }
-    }
 
-    operator fun invoke(response: TrendingResult): TrendingData? {
-
-        return when (response) {
+        val result = when (response) {
             is AllTrendingResult -> {
                 try {
-
                     val mediaType = try {
                         MediaType.valueOf(response.media_type!!)
                     } catch (e: Exception) {
@@ -93,7 +87,7 @@ class MapEntityUseCase @Inject constructor(
                         backdropPath = response.backdrop_path?.ifEmpty { null },
                         posterPath = response.poster_path?.ifEmpty { null },
                         releaseYear = response.release_date?.split("-")?.first() ?: "-",
-                        genres = response.genre_ids?.map { id -> genres.find { it.id == id }!! }
+                        genres = response.genre_ids?.mapNotNull { id -> genres.find { it.id == id } }
                             ?: listOf(),
                         rating = if (response.vote_count == 0) {
                             "-"
@@ -123,7 +117,7 @@ class MapEntityUseCase @Inject constructor(
                         backdropPath = response.backdrop_path?.ifEmpty { null },
                         posterPath = response.poster_path?.ifEmpty { null },
                         releaseYear = response.first_air_date?.split("-")?.first() ?: "-",
-                        genres = response.genre_ids?.map { id -> genres.find { it.id == id }!! }
+                        genres = response.genre_ids?.mapNotNull { id -> genres.find { it.id == id } }
                             ?: listOf(),
                         rating = if (response.vote_count == 0) {
                             "-"
@@ -139,7 +133,6 @@ class MapEntityUseCase @Inject constructor(
 
             is TrendingPeopleResult -> {
                 try {
-
                     val mediaType = try {
                         MediaType.valueOf(response.media_type!!)
                     } catch (e: Exception) {
@@ -152,11 +145,27 @@ class MapEntityUseCase @Inject constructor(
                         profilePath = response.profile_path?.ifEmpty { null },
                         peopleType = when (response.known_for_department) {
                             "Acting" -> {
-                                "Actor"
+                                when (response.gender) {
+                                    1 -> "Actress"
+                                    2 -> "Actor"
+                                    else -> "Actor/Actress"
+                                }
                             }
 
                             "Directing" -> {
                                 "Director"
+                            }
+
+                            "Sound" -> {
+                                "Music composer"
+                            }
+
+                            "Art" -> {
+                                "Artist"
+                            }
+
+                            "Camera" -> {
+                                "Cinematographer"
                             }
 
                             else -> {
@@ -172,5 +181,6 @@ class MapEntityUseCase @Inject constructor(
 
             else -> TODO()
         }
+        emit(result)
     }
 }

@@ -13,19 +13,25 @@ import kotlinx.coroutines.flow.Flow
 interface HomeRepository {
 
     val genres: List<Genre>
+    fun setGenres(genres: List<Genre>)
+
     fun getAllTrending(
+        page: Int = 1,
         timeWindow: String = "day"
     ): Flow<DataState<ListResponse<AllTrendingResult>>>
 
     fun getTrendingMovies(
+        page: Int = 1,
         timeWindow: String = "day"
     ): Flow<DataState<ListResponse<TrendingMovieResult>>>
 
     fun getTrendingTv(
+        page: Int = 1,
         timeWindow: String = "day"
     ): Flow<DataState<ListResponse<TrendingTvResult>>>
 
     fun getTrendingPeople(
+        page: Int = 1,
         timeWindow: String = "day"
     ): Flow<DataState<ListResponse<TrendingPeopleResult>>>
 

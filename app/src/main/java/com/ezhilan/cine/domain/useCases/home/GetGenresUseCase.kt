@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class GetGenresUseCase @Inject constructor(private val repo: HomeRepository) {
     private val genres: MutableList<Genre?> = mutableListOf()
 
@@ -24,16 +26,19 @@ class GetGenresUseCase @Inject constructor(private val repo: HomeRepository) {
                     is DataState.InProgress -> emit(movieGenreDataState)
                 }
 
-                repo.getTvGenres().collect { tvGenreDataState ->
-                    when (tvGenreDataState) {
-                        is DataState.Success -> {
-                            tvGenreDataState.data.genres?.let { genres.addAll(it) }
-                            emit(DataState.Success(genres.filterNotNull()))
+                if (movieGenreDataState !is DataState.InProgress) {
+                    repo.getTvGenres().collect { tvGenreDataState ->
+                        when (tvGenreDataState) {
+                            is DataState.Success -> {
+                                tvGenreDataState.data.genres?.let { genres.addAll(it) }
+                                repo.setGenres(genres.filterNotNull())
+                                emit(DataState.Success(genres.filterNotNull()))
+                            }
+
+                            is DataState.Error -> emit(tvGenreDataState)
+
+                            is DataState.InProgress -> emit(tvGenreDataState)
                         }
-
-                        is DataState.Error -> emit(tvGenreDataState)
-
-                        is DataState.InProgress -> emit(tvGenreDataState)
                     }
                 }
             }

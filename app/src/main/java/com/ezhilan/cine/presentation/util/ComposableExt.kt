@@ -1,6 +1,7 @@
 package com.ezhilan.cine.presentation.util
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
@@ -19,6 +20,11 @@ fun Modifier.enableGesture(isEnabled: Boolean) = if (isEnabled) this else {
 }
 
 internal fun LazyListState.reachedBottom(buffer: Int = 1): Boolean {
+    val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+    return lastVisibleItemIndex != 0 && lastVisibleItemIndex == layoutInfo.totalItemsCount - buffer
+}
+
+internal fun LazyGridState.reachedBottom(buffer: Int = 1): Boolean {
     val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
     return lastVisibleItemIndex != 0 && lastVisibleItemIndex == layoutInfo.totalItemsCount - buffer
 }
