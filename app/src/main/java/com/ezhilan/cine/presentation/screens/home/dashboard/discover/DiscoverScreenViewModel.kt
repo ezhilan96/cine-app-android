@@ -2,6 +2,7 @@ package com.ezhilan.cine.presentation.screens.home.dashboard.discover
 
 import androidx.lifecycle.viewModelScope
 import com.ezhilan.cine.domain.entity.MediaData
+import com.ezhilan.cine.domain.entity.MediaType
 import com.ezhilan.cine.domain.useCases.home.GetMovieListUseCase
 import com.ezhilan.cine.domain.useCases.home.MovieListType
 import com.ezhilan.cine.presentation.screens.core.ScreenUiState
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class DiscoverNavigationItem {
-    ALERT, VIEW_ALL_LIST
+    ALERT, VIEW_ALL_LIST, MEDIA_TYPE_DD
 }
 
 data class DiscoverScreenUiState(
@@ -20,6 +21,8 @@ data class DiscoverScreenUiState(
     override val screenStack: List<DiscoverNavigationItem> = listOf(),
     override val alertMessage: UiText = UiText.Value(),
     val searchQuery: String = "",
+    val mediaTypeList: List<MediaType> = MediaType.entries.filterNot { it == MediaType.all },
+    val selectedMediaTypeIndex: Int = 0,
     val nowPlayingMovies: List<MediaData> = emptyList(),
     val popularMovies: List<MediaData> = emptyList(),
     val topRatedMovies: List<MediaData> = emptyList(),
@@ -33,12 +36,15 @@ sealed class DiscoverScreenUiEvent {
     data class OnSearchQueryChanged(val query: String) : DiscoverScreenUiEvent()
     data object OnRefresh : DiscoverScreenUiEvent()
     data object OnLoadMore : DiscoverScreenUiEvent()
+
+    data object OnMediaTypeClicked : DiscoverScreenUiEvent()
+    data class OnMediaTypeSelected(val index: Int) : DiscoverScreenUiEvent()
     data object OnNowPlayingViewAllClicked : DiscoverScreenUiEvent()
     data object OnPopularViewAllClicked : DiscoverScreenUiEvent()
     data object OnTopRatedViewAllClicked : DiscoverScreenUiEvent()
     data object OnUpcomingViewAllClicked : DiscoverScreenUiEvent()
 
-    data object OnDismiss : DiscoverScreenUiEvent()
+    data object Dismiss : DiscoverScreenUiEvent()
 }
 
 @HiltViewModel
@@ -51,11 +57,17 @@ class DiscoverScreenViewModel @Inject constructor(
     }
 
     private fun refreshAllList() {
-        viewModelScope.launch {
-            refreshMovieList(movieListType = MovieListType.now_playing)
-            refreshMovieList(movieListType = MovieListType.popular)
-            refreshMovieList(movieListType = MovieListType.top_rated)
-            refreshMovieList(movieListType = MovieListType.upcoming)
+        when (uiState.value.mediaTypeList[uiState.value.selectedMediaTypeIndex]) {
+            MediaType.movie -> viewModelScope.launch {
+                refreshMovieList(movieListType = MovieListType.now_playing)
+                refreshMovieList(movieListType = MovieListType.popular)
+                refreshMovieList(movieListType = MovieListType.top_rated)
+                refreshMovieList(movieListType = MovieListType.upcoming)
+            }
+
+            MediaType.tv -> {}
+            MediaType.person -> {}
+            else -> {}
         }
     }
 
@@ -93,7 +105,23 @@ class DiscoverScreenViewModel @Inject constructor(
             DiscoverScreenUiEvent.OnRefresh -> refreshAllList()
             DiscoverScreenUiEvent.OnLoadMore -> viewModelScope.launch {
                 refreshMovieList(
-                    isPagingEnabled = true, movieListType = uiState.value.selectedMovieListType
+                    isPagingEnabled = true,
+                    movieListType = uiState.value.selectedMovieListType,
+                )
+            }
+
+            DiscoverScreenUiEvent.OnMediaTypeClicked -> updateUiState { currentState ->
+                currentState.copy(screenStack = currentState.screenStack.toMutableList().apply {
+                    add(DiscoverNavigationItem.MEDIA_TYPE_DD)
+                })
+            }
+
+            is DiscoverScreenUiEvent.OnMediaTypeSelected -> updateUiState { currentState ->
+                currentState.copy(
+                    selectedMediaTypeIndex = event.index,
+                    screenStack = currentState.screenStack.toMutableList().apply {
+                        remove(DiscoverNavigationItem.MEDIA_TYPE_DD)
+                    },
                 )
             }
 
@@ -137,7 +165,7 @@ class DiscoverScreenViewModel @Inject constructor(
                 )
             }
 
-            DiscoverScreenUiEvent.OnDismiss -> updateUiState { currentState ->
+            DiscoverScreenUiEvent.Dismiss -> updateUiState { currentState ->
                 currentState.copy(screenStack = listOf())
             }
         }
