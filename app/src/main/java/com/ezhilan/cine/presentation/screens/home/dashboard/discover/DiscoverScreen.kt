@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -107,6 +108,10 @@ fun DiscoverDestination(
                 onDismiss = { viewModel.onUiEvent(DiscoverScreenUiEvent.Dismiss) },
             )
         }
+    }
+
+    LaunchedEffect(uiState.selectedMediaTypeIndex) {
+        viewModel.onUiEvent(DiscoverScreenUiEvent.OnRefresh)
     }
 }
 
@@ -246,7 +251,48 @@ fun DiscoverScreen(
                     }
                 }
 
-                MediaType.tv -> {}
+                MediaType.tv -> {
+                    if (uiState.airingTodayTvShows.isNotEmpty()) {
+                        HorizontalListContainer(
+                            label = "Airing today",
+                            onViewAllClick = { uiEvent(DiscoverScreenUiEvent.OnAiringTodayViewAllClicked) },
+                            listView = {
+                                MediaListView(mediaList = uiState.airingTodayTvShows)
+                            },
+                        )
+                    }
+
+                    if (uiState.onTheAirTvShows.isNotEmpty()) {
+                        HorizontalListContainer(
+                            label = "On the air",
+                            onViewAllClick = { uiEvent(DiscoverScreenUiEvent.OnOnTheAirViewAllClicked) },
+                            listView = {
+                                MediaListView(mediaList = uiState.onTheAirTvShows)
+                            },
+                        )
+                    }
+
+                    if (uiState.popularTvShows.isNotEmpty()) {
+                        HorizontalListContainer(
+                            label = "Popular",
+                            onViewAllClick = { uiEvent(DiscoverScreenUiEvent.OnPopularViewAllClicked) },
+                            listView = {
+                                MediaListView(mediaList = uiState.popularTvShows)
+                            },
+                        )
+                    }
+
+                    if (uiState.topRatedTvShows.isNotEmpty()) {
+                        HorizontalListContainer(
+                            label = "Top rated",
+                            onViewAllClick = { uiEvent(DiscoverScreenUiEvent.OnTopRatedViewAllClicked) },
+                            listView = {
+                                MediaListView(mediaList = uiState.topRatedTvShows)
+                            },
+                        )
+                    }
+                }
+
                 MediaType.person -> {}
                 MediaType.all -> {}
             }

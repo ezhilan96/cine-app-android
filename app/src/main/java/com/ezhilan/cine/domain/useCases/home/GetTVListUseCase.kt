@@ -10,27 +10,28 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-enum class MovieListType { now_playing, popular, top_rated, upcoming, }
+enum class TvListType { airing_today, on_the_air, popular, top_rated }
 
-class GetMovieListUseCase @Inject constructor(
+class GetTVListUseCase @Inject constructor(
     private val repo: HomeRepository,
     private val mapEntity: MapEntityUseCase,
 ) {
     private var list: MutableList<MediaData> = mutableListOf()
     private var currentPage: Int = 0
-    private var movieListType: MovieListType = MovieListType.now_playing
+    private var tvListType: TvListType = TvListType.airing_today
+
 
     operator fun invoke(
-        movieListType: MovieListType,
+        tvListType: TvListType,
         pagingEnabled: Boolean = false,
     ): Flow<DataState<List<MediaData>>> {
-        if (movieListType != this.movieListType || !pagingEnabled) {
+        if (tvListType != this.tvListType || !pagingEnabled) {
             list.clear()
-            this.movieListType = movieListType
+            this.tvListType = tvListType
             currentPage = 0
         }
-        return repo.getMovieList(
-            movieListType = movieListType.toString(),
+        return repo.getTvList(
+            tvListType = tvListType.toString(),
             page = currentPage + 1,
         ).map { dataState ->
             when (dataState) {
@@ -44,7 +45,7 @@ class GetMovieListUseCase @Inject constructor(
 
                 is DataState.Error -> if (currentPage > 0) {
                     invoke(
-                        movieListType = movieListType,
+                        tvListType = tvListType,
                         pagingEnabled = false,
                     ).filter { it !is DataState.InProgress }.first()
                 } else {
@@ -54,4 +55,3 @@ class GetMovieListUseCase @Inject constructor(
         }
     }
 }
-

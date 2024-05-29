@@ -49,4 +49,10 @@ interface HomeService {
         @Query("region") region: String,
     ): ListResponse<MovieResult>
 
+    @GET("3/tv/{tvListType}")
+    suspend fun getTvList(
+        @Path(value = "tvListType") tvListType: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<TvResult>
+
 }

@@ -94,4 +94,12 @@ class HomeRepositoryImpl @Inject constructor(
             region = dataStore.region.first(),
         )
     }
+
+    override fun getTvList(tvListType: String, page: Int): Flow<DataState<ListResponse<TvResult>>> =
+        executeRemoteCall {
+            homeService.getTvList(
+                tvListType = tvListType,
+                page = page,
+            )
+        }
 }

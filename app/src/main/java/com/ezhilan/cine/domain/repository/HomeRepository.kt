@@ -38,4 +38,9 @@ interface HomeRepository {
         movieListType: String,
         page: Int = 1,
     ): Flow<DataState<ListResponse<MovieResult>>>
+
+    fun getTvList(
+        tvListType: String,
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<TvResult>>>
 }
