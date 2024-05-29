@@ -31,8 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhilan.cine.R
+import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
-import com.ezhilan.cine.domain.entity.TrendingData
 import com.ezhilan.cine.presentation.config.CineTheme
 import com.ezhilan.cine.presentation.config.colors
 import com.ezhilan.cine.presentation.config.spacing
@@ -41,9 +41,9 @@ import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.
 import java.util.Locale
 
 @Composable
-fun MediaList(
+fun MediaListView(
     modifier: Modifier = Modifier,
-    trendingList: List<TrendingData>,
+    mediaList: List<MediaData>,
 ) {
     val localDensity = LocalDensity.current
     var screenWidth by remember { mutableStateOf(0.dp) }
@@ -56,7 +56,7 @@ fun MediaList(
             },
         verticalAlignment = Alignment.Top,
     ) {
-        trendingList.forEach { trendingData ->
+        mediaList.forEach { trendingData ->
             item { Spacer(modifier = modifier.width(MaterialTheme.spacing.grid1)) }
             item {
                 Column {
@@ -151,9 +151,9 @@ fun MediaList(
 private fun MediaListPreview() {
     CineTheme {
         Surface {
-            MediaList(
-                trendingList = listOf(
-                    TrendingData(
+            MediaListView(
+                mediaList = listOf(
+                    MediaData(
                         id = "",
                         title = "Title",
                         overview = "Overview",
@@ -163,7 +163,7 @@ private fun MediaListPreview() {
                         mediaType = MediaType.tv,
                         genres = listOf(),
                         rating = "7.8",
-                    ), TrendingData(
+                    ), MediaData(
                         id = "",
                         title = "Title\ntitle",
                         overview = "Overview",

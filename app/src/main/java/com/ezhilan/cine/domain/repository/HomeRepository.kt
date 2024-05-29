@@ -1,12 +1,12 @@
 package com.ezhilan.cine.domain.repository
 
-import com.ezhilan.cine.data.model.remote.response.Genre
-import com.ezhilan.cine.data.model.remote.response.GenreResponse
 import com.ezhilan.cine.data.model.remote.response.core.ListResponse
-import com.ezhilan.cine.data.model.remote.response.trending.AllTrendingResult
-import com.ezhilan.cine.data.model.remote.response.trending.TrendingMovieResult
-import com.ezhilan.cine.data.model.remote.response.trending.TrendingPeopleResult
-import com.ezhilan.cine.data.model.remote.response.trending.TrendingTvResult
+import com.ezhilan.cine.data.model.remote.response.home.Genre
+import com.ezhilan.cine.data.model.remote.response.home.GenreResponse
+import com.ezhilan.cine.data.model.remote.response.home.MediaResult
+import com.ezhilan.cine.data.model.remote.response.home.MovieResult
+import com.ezhilan.cine.data.model.remote.response.home.PeopleResult
+import com.ezhilan.cine.data.model.remote.response.home.TvResult
 import com.ezhilan.cine.data.util.DataState
 import kotlinx.coroutines.flow.Flow
 
@@ -16,25 +16,26 @@ interface HomeRepository {
     fun setGenres(genres: List<Genre>)
 
     fun getAllTrending(
-        page: Int = 1,
-        timeWindow: String = "day"
-    ): Flow<DataState<ListResponse<AllTrendingResult>>>
+        page: Int = 1, timeWindow: String = "day"
+    ): Flow<DataState<ListResponse<MediaResult>>>
 
     fun getTrendingMovies(
-        page: Int = 1,
-        timeWindow: String = "day"
-    ): Flow<DataState<ListResponse<TrendingMovieResult>>>
+        page: Int = 1, timeWindow: String = "day"
+    ): Flow<DataState<ListResponse<MovieResult>>>
 
     fun getTrendingTv(
-        page: Int = 1,
-        timeWindow: String = "day"
-    ): Flow<DataState<ListResponse<TrendingTvResult>>>
+        page: Int = 1, timeWindow: String = "day"
+    ): Flow<DataState<ListResponse<TvResult>>>
 
     fun getTrendingPeople(
-        page: Int = 1,
-        timeWindow: String = "day"
-    ): Flow<DataState<ListResponse<TrendingPeopleResult>>>
+        page: Int = 1, timeWindow: String = "day"
+    ): Flow<DataState<ListResponse<PeopleResult>>>
 
     fun getMovieGenres(): Flow<DataState<GenreResponse>>
     fun getTvGenres(): Flow<DataState<GenreResponse>>
+
+    fun getMovieList(
+        movieListType: String,
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<MovieResult>>>
 }

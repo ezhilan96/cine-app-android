@@ -76,6 +76,11 @@ data class TextStyles(
         fontSize = (sizeFactor * 16).sp,
     ),
 
+    val trendingScreenTitleSmall: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_light)),
+        fontSize = (sizeFactor * 12).sp,
+    ),
+
     //trending fullscreen card
     val trendingCarouselTitle: TextStyle = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_medium)),
@@ -119,6 +124,16 @@ data class TextStyles(
     val trendingCardTitle: TextStyle = TextStyle(
         fontFamily = FontFamily(Font(R.font.roboto_medium)),
         fontSize = (sizeFactor * 14).sp,
+    ),
+
+    //Settings
+    val settingsTitleLarge: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_medium)),
+        fontSize = (sizeFactor * 14).sp,
+    ),
+    val settingsLabelSmall: TextStyle = TextStyle(
+        fontFamily = FontFamily(Font(R.font.roboto_light)),
+        fontSize = (sizeFactor * 12).sp,
     ),
 )
 

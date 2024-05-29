@@ -27,6 +27,7 @@ data class Spacing(
     val grid5: Dp = (sizeFactor * 40).dp,
 
     val size_rating_star: Dp = (sizeFactor * 14).dp,
+    val height_search_bar: Dp = (sizeFactor * 56).dp,
 )
 
 val LocalSpacing = compositionLocalOf { Spacing() }

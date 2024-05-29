@@ -21,8 +21,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
-import com.ezhilan.cine.domain.entity.TrendingData
 import com.ezhilan.cine.presentation.config.CineTheme
 import com.ezhilan.cine.presentation.config.spacing
 import com.ezhilan.cine.presentation.config.textStyle
@@ -31,7 +31,7 @@ import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.
 @Composable
 fun ProfileList(
     modifier: Modifier = Modifier,
-    trendingList: List<TrendingData>,
+    trendingList: List<MediaData>,
 ) {
     val localDensity = LocalDensity.current
     var screenWidth by remember { mutableStateOf(0.dp) }
@@ -91,7 +91,7 @@ private fun MediaListPreview() {
         Surface {
             ProfileList(
                 trendingList = listOf(
-                    TrendingData(
+                    MediaData(
                         id = "",
                         title = "Title",
                         overview = "Overview",
@@ -102,7 +102,7 @@ private fun MediaListPreview() {
                         genres = listOf(),
                         rating = "7.8",
                         peopleType = "Actor"
-                    ), TrendingData(
+                    ), MediaData(
                         id = "",
                         title = "Title\ntitle",
                         overview = "Overview",

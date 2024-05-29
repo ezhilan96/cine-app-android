@@ -46,8 +46,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ezhilan.cine.R
+import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
-import com.ezhilan.cine.domain.entity.TrendingData
 import com.ezhilan.cine.presentation.config.CineTheme
 import com.ezhilan.cine.presentation.config.colors
 import com.ezhilan.cine.presentation.config.spacing
@@ -58,9 +58,9 @@ import kotlinx.coroutines.delay
 import java.util.Locale
 
 @Composable
-fun FullScreenCarousel(
+fun TrendingtopCarousel(
     modifier: Modifier = Modifier,
-    trendingList: List<TrendingData>,
+    trendingList: List<MediaData>,
     onViewAllClick: () -> Unit,
 ) {
     val localDensity = LocalDensity.current
@@ -214,9 +214,9 @@ fun FullScreenCarousel(
 private fun MediaListPreview() {
     CineTheme {
         Surface {
-            FullScreenCarousel(
+            TrendingtopCarousel(
                 trendingList = listOf(
-                    TrendingData(
+                    MediaData(
                         id = "",
                         title = "Title",
                         overview = "Overview",

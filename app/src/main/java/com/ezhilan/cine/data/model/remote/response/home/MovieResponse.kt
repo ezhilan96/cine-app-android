@@ -1,11 +1,10 @@
-package com.ezhilan.cine.data.model.remote.response.trending
+package com.ezhilan.cine.data.model.remote.response.home
 
-data class TrendingMovieResult(
+data class MovieResult(
     val adult: Boolean?,
     val backdrop_path: String?,
     val genre_ids: List<Int?>?,
     val id: Int?,
-    val media_type: String?,
     val original_language: String?,
     val original_title: String?,
     val overview: String?,
@@ -16,4 +15,4 @@ data class TrendingMovieResult(
     val video: Boolean?,
     val vote_average: Double?,
     val vote_count: Int?
-): TrendingResult
+)

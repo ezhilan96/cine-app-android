@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.ezhilan.cine.presentation.screens.home.dashboard.trending.view
+package com.ezhilan.cine.presentation.screens.core.dialog
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -41,25 +41,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.ezhilan.cine.R
+import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
-import com.ezhilan.cine.domain.entity.TrendingData
 import com.ezhilan.cine.presentation.config.CineTheme
 import com.ezhilan.cine.presentation.config.colors
 import com.ezhilan.cine.presentation.config.spacing
 import com.ezhilan.cine.presentation.config.textStyle
 import com.ezhilan.cine.presentation.screens.core.component.InfiniteLazyVerticalGrid
-import com.ezhilan.cine.presentation.screens.home.dashboard.trending.TrendingScreenUiEvent
-import com.ezhilan.cine.presentation.screens.home.dashboard.trending.TrendingScreenUiState
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.PosterImage
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.ProfileImage
 import com.ezhilan.cine.presentation.util.enableGesture
 import java.util.Locale
 
 @Composable
-fun TrendingListDialog(
+fun MediaListDialog(
     modifier: Modifier = Modifier,
-    uiState: TrendingScreenUiState,
-    uiEvent: (TrendingScreenUiEvent) -> Unit,
+    isLoading: Boolean,
+    title: String,
+    list: List<MediaData>,
+    mediaType: MediaType,
+    onLoadMore: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
     val lazyGridState: LazyGridState = rememberLazyGridState()
     val isListScrolledDown by remember {
@@ -68,35 +70,28 @@ fun TrendingListDialog(
         }
     }
     Dialog(
-        onDismissRequest = { uiEvent(TrendingScreenUiEvent.Dismiss) },
+        onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
-        Surface(modifier = modifier
-            .fillMaxSize()
-            .enableGesture(!uiState.isLoading)) {
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .enableGesture(!isLoading)
+        ) {
             Column(
                 modifier = modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 TopAppBar(
                     navigationIcon = {
-                        IconButton(onClick = { uiEvent(TrendingScreenUiEvent.Dismiss) }) {
+                        IconButton(onClick = onDismiss) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = null
                             )
                         }
                     },
-                    title = {
-                        Text(
-                            text = when (uiState.selectedMediaType) {
-                                MediaType.all -> "All trending"
-                                MediaType.movie -> "Trending Movies"
-                                MediaType.tv -> "Trending TV shows"
-                                MediaType.person -> "Trending People"
-                            },
-                        )
-                    },
+                    title = { Text(text = title) },
                 )
                 InfiniteLazyVerticalGrid(
                     modifier = modifier
@@ -104,31 +99,26 @@ fun TrendingListDialog(
                         .padding(horizontal = MaterialTheme.spacing.grid05),
                     lazyGridState = lazyGridState,
                     columns = GridCells.Fixed(3),
-                    onLoadMore = { uiEvent(TrendingScreenUiEvent.OnLoadMore) },
+                    onLoadMore = onLoadMore,
                 ) {
-                    when (uiState.selectedMediaType) {
-                        MediaType.all -> uiState.allTrendingList
-                        MediaType.movie -> uiState.trendingMovieList
-                        MediaType.tv -> uiState.trendingTvList
-                        MediaType.person -> uiState.trendingPeopleList
-                    }.forEach { trendingData ->
+                    list.forEach { mediaData ->
                         item {
-                            if (uiState.selectedMediaType == MediaType.person) {
+                            if (mediaType == MediaType.person) {
                                 PeopleItemView(
                                     modifier = modifier,
-                                    trendingData = trendingData,
+                                    mediaData = mediaData,
                                 )
                             } else {
                                 MediaItemView(
                                     modifier = modifier,
-                                    trendingData = trendingData,
+                                    mediaData = mediaData,
                                 )
                             }
                         }
                     }
                 }
 
-                if (isListScrolledDown && uiState.isLoading) {
+                if (isListScrolledDown && isLoading) {
                     CircularProgressIndicator(
                         modifier = modifier
                             .padding(MaterialTheme.spacing.grid1)
@@ -141,7 +131,7 @@ fun TrendingListDialog(
 }
 
 @Composable
-fun MediaItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
+fun MediaItemView(modifier: Modifier = Modifier, mediaData: MediaData) {
     Column(
         modifier = modifier
             .padding(MaterialTheme.spacing.grid05)
@@ -153,7 +143,7 @@ fun MediaItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
         ) {
             Box {
                 PosterImage(
-                    imagePath = trendingData.posterPath ?: ""
+                    imagePath = mediaData.posterPath ?: ""
                 )
                 Row(
                     modifier = modifier
@@ -171,7 +161,7 @@ fun MediaItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
                             )
                             .padding(horizontal = MaterialTheme.spacing.unit4)
                             .padding(vertical = MaterialTheme.spacing.unit2),
-                        text = trendingData.mediaType.toString()
+                        text = mediaData.mediaType.toString()
                             .replaceFirstChar { it.titlecase(Locale.ROOT) },
                         style = MaterialTheme.textStyle.trendingCardMediaType,
                         color = MaterialTheme.colorScheme.inverseOnSurface,
@@ -187,7 +177,7 @@ fun MediaItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = trendingData.releaseYear ?: "-",
+                text = mediaData.releaseYear ?: "-",
                 style = MaterialTheme.textStyle.trendingCardYear,
             )
             Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
@@ -205,7 +195,7 @@ fun MediaItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
                 )
                 Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
                 Text(
-                    text = trendingData.rating ?: "-",
+                    text = mediaData.rating ?: "-",
                     style = MaterialTheme.textStyle.trendingCardRating,
                     maxLines = 1,
                 )
@@ -216,14 +206,14 @@ fun MediaItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
 
         Text(
             modifier = modifier.fillMaxWidth(),
-            text = trendingData.title,
+            text = mediaData.title,
             style = MaterialTheme.textStyle.trendingCardTitle,
         )
     }
 }
 
 @Composable
-fun PeopleItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
+fun PeopleItemView(modifier: Modifier = Modifier, mediaData: MediaData) {
     Column(
         modifier = modifier
             .padding(MaterialTheme.spacing.grid05)
@@ -234,7 +224,7 @@ fun PeopleItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
             shape = MaterialTheme.shapes.small,
         ) {
             ProfileImage(
-                imagePath = trendingData.profilePath ?: ""
+                imagePath = mediaData.profilePath ?: ""
             )
         }
 
@@ -242,13 +232,13 @@ fun PeopleItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
 
         Text(
             modifier = modifier.fillMaxWidth(),
-            text = trendingData.title,
+            text = mediaData.title,
             style = MaterialTheme.textStyle.trendingCardTitle,
         )
         Spacer(modifier = modifier.height(MaterialTheme.spacing.grid05))
 
         Text(
-            text = trendingData.peopleType ?: "-",
+            text = mediaData.peopleType ?: "-",
             style = MaterialTheme.textStyle.trendingCardYear,
         )
     }
@@ -260,9 +250,13 @@ fun PeopleItemView(modifier: Modifier = Modifier, trendingData: TrendingData) {
 private fun AllTrendingListPreview() {
     CineTheme {
         Scaffold {
-            TrendingListDialog(
-                uiState = TrendingScreenUiState(),
-                uiEvent = {},
+            MediaListDialog(
+                isLoading = false,
+                title = "Trending",
+                list = listOf(),
+                mediaType = MediaType.movie,
+                onLoadMore = {},
+                onDismiss = {},
             )
         }
     }

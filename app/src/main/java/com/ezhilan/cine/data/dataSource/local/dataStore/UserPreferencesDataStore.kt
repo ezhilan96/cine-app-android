@@ -18,6 +18,7 @@ class UserPreferencesDataStore @Inject constructor(
 ) {
     private val sessionKey = booleanPreferencesKey("session")
     private val appThemeKey = stringPreferencesKey("appTheme")
+    private val regionKey = stringPreferencesKey("region")
 
     val isSessionActive: Flow<Boolean> = userPreferencesDataStore.data.map { preferences ->
         preferences[sessionKey] ?: true
@@ -50,6 +51,16 @@ class UserPreferencesDataStore @Inject constructor(
     suspend fun setAppTheme(appTheme: AppTheme) {
         userPreferencesDataStore.edit {
             it[appThemeKey] = appTheme.name
+        }
+    }
+
+    val region: Flow<String> = userPreferencesDataStore.data.map { preferences ->
+        preferences[regionKey] ?: ""
+    }
+
+    suspend fun setRegion(region: String) {
+        userPreferencesDataStore.edit {
+            it[regionKey] = region
         }
     }
 }

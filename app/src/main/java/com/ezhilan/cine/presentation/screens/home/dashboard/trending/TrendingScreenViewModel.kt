@@ -1,13 +1,10 @@
 package com.ezhilan.cine.presentation.screens.home.dashboard.trending
 
 import androidx.lifecycle.viewModelScope
-import com.ezhilan.cine.data.model.remote.response.Genre
+import com.ezhilan.cine.data.model.remote.response.home.Genre
+import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
-import com.ezhilan.cine.domain.entity.TrendingData
-import com.ezhilan.cine.domain.useCases.home.GetAllTrendingUseCase
-import com.ezhilan.cine.domain.useCases.home.GetTrendingMovieUseCase
-import com.ezhilan.cine.domain.useCases.home.GetTrendingPeopleUseCase
-import com.ezhilan.cine.domain.useCases.home.GetTrendingTvUseCase
+import com.ezhilan.cine.domain.useCases.home.GetTrendingListUseCase
 import com.ezhilan.cine.presentation.screens.core.ScreenUiState
 import com.ezhilan.cine.presentation.screens.core.ScreenViewModel
 import com.ezhilan.cine.presentation.util.UiText
@@ -27,10 +24,10 @@ data class TrendingScreenUiState(
     override val alertMessage: UiText = UiText.Value(),
     val timeWindowList: List<String> = listOf("Today", "This Week"),
     val selectedTimeWindowIndex: Int = 0,
-    val allTrendingList: List<TrendingData> = listOf(),
-    val trendingMovieList: List<TrendingData> = listOf(),
-    val trendingTvList: List<TrendingData> = listOf(),
-    val trendingPeopleList: List<TrendingData> = listOf(),
+    val allTrendingList: MutableList<MediaData> = mutableListOf(),
+    val trendingMovieList: MutableList<MediaData> = mutableListOf(),
+    val trendingTvList: MutableList<MediaData> = mutableListOf(),
+    val trendingPeopleList: MutableList<MediaData> = mutableListOf(),
     val selectedMediaType: MediaType = MediaType.all,
     val genres: List<Genre> = listOf(),
 ) : ScreenUiState {
@@ -48,10 +45,7 @@ sealed class TrendingScreenUiEvent {
 
 @HiltViewModel
 class TrendingScreenViewModel @Inject constructor(
-    private val getAllTrending: GetAllTrendingUseCase,
-    private val getTrendingMovie: GetTrendingMovieUseCase,
-    private val getTrendingTv: GetTrendingTvUseCase,
-    private val getTrendingPeople: GetTrendingPeopleUseCase,
+    private val getTrendingList: GetTrendingListUseCase,
 ) : ScreenViewModel<TrendingScreenUiState, TrendingScreenUiEvent>(TrendingScreenUiState()) {
 
     init {
@@ -60,61 +54,40 @@ class TrendingScreenViewModel @Inject constructor(
 
     private fun refreshAllList() {
         viewModelScope.launch {
-            getAllTrendingList()
-            getTrendingMovieList()
-            getTrendingTvList()
-            getTrendingPeopleList()
+            getTrendingList(mediaType = MediaType.all)
+            getTrendingList(mediaType = MediaType.movie)
+            getTrendingList(mediaType = MediaType.tv)
+            getTrendingList(mediaType = MediaType.person)
         }
     }
 
-    private suspend fun getAllTrendingList(pagingEnabled: Boolean = false) {
-        getAllTrending(
-            pagingEnabled = pagingEnabled,
-            timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex]
-        ).collectDataState { dataState ->
-            updateUiState { currentState ->
-                currentState.copy(
-                    allTrendingList = dataState.data,
-                )
-            }
-        }
-    }
-
-    private suspend fun getTrendingMovieList(pagingEnabled: Boolean = false) {
-        getTrendingMovie(
+    private suspend fun getTrendingList(
+        pagingEnabled: Boolean = false,
+        mediaType: MediaType,
+    ) {
+        getTrendingList(
             pagingEnabled = pagingEnabled,
             timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
+            mediaType = mediaType,
         ).collectDataState { dataState ->
             updateUiState { currentState ->
-                currentState.copy(
-                    trendingMovieList = dataState.data,
-                )
-            }
-        }
-    }
+                when (mediaType) {
+                    MediaType.all -> currentState.copy(allTrendingList = mutableListOf<MediaData>().apply {
+                        addAll(dataState.data)
+                    })
 
-    private suspend fun getTrendingTvList(pagingEnabled: Boolean = false) {
-        getTrendingTv(
-            pagingEnabled = pagingEnabled,
-            timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
-        ).collectDataState { dataState ->
-            updateUiState { currentState ->
-                currentState.copy(
-                    trendingTvList = dataState.data,
-                )
-            }
-        }
-    }
+                    MediaType.movie -> currentState.copy(trendingMovieList = mutableListOf<MediaData>().apply {
+                        addAll(dataState.data)
+                    })
 
-    private suspend fun getTrendingPeopleList(pagingEnabled: Boolean = false) {
-        getTrendingPeople(
-            pagingEnabled = pagingEnabled,
-            timeWindow = timeWindowList[uiState.value.selectedTimeWindowIndex],
-        ).collectDataState { dataState ->
-            updateUiState { currentState ->
-                currentState.copy(
-                    trendingPeopleList = dataState.data,
-                )
+                    MediaType.tv -> currentState.copy(trendingTvList = mutableListOf<MediaData>().apply {
+                        addAll(dataState.data)
+                    })
+
+                    MediaType.person -> currentState.copy(trendingPeopleList = mutableListOf<MediaData>().apply {
+                        addAll(dataState.data)
+                    })
+                }
             }
         }
     }
@@ -124,26 +97,20 @@ class TrendingScreenViewModel @Inject constructor(
 
             TrendingScreenUiEvent.OnRefresh -> refreshAllList()
 
-            TrendingScreenUiEvent.OnLoadMore -> {
-                viewModelScope.launch {
-                    when (uiState.value.selectedMediaType) {
-                        MediaType.all -> getAllTrendingList(true)
-                        MediaType.movie -> getTrendingMovieList(true)
-                        MediaType.tv -> getTrendingTvList(true)
-                        MediaType.person -> getTrendingPeopleList(true)
-                    }
-                }
+            TrendingScreenUiEvent.OnLoadMore -> viewModelScope.launch {
+                getTrendingList(
+                    pagingEnabled = true,
+                    mediaType = uiState.value.selectedMediaType,
+                )
             }
 
-            is TrendingScreenUiEvent.OnViewAllPressed -> {
-                updateUiState { currentState ->
-                    currentState.copy(
-                        selectedMediaType = event.mediaType,
-                        screenStack = currentState.screenStack.toMutableList().apply {
-                            add(TrendingNavigationItem.VIEW_ALL_LIST)
-                        },
-                    )
-                }
+            is TrendingScreenUiEvent.OnViewAllPressed -> updateUiState { currentState ->
+                currentState.copy(
+                    selectedMediaType = event.mediaType,
+                    screenStack = currentState.screenStack.toMutableList().apply {
+                        add(TrendingNavigationItem.VIEW_ALL_LIST)
+                    },
+                )
             }
 
             TrendingScreenUiEvent.ShowTimeWindowDD -> updateUiState { currentState ->
@@ -165,9 +132,11 @@ class TrendingScreenViewModel @Inject constructor(
             }
 
             TrendingScreenUiEvent.Dismiss -> updateUiState { currentState ->
-                currentState.copy(screenStack = currentState.screenStack.toMutableList().apply {
-                    removeLast()
-                })
+                currentState.copy(
+                    screenStack = currentState.screenStack.toMutableList().apply {
+                        removeLast()
+                    },
+                )
             }
         }
     }

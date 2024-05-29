@@ -1,4 +1,4 @@
-package com.ezhilan.cine.data.model.remote.response
+package com.ezhilan.cine.data.model.remote.response.home
 
 data class GenreResponse(
     val genres: List<Genre?>?

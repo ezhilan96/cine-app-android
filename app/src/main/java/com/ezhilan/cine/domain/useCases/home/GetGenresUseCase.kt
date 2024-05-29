@@ -1,6 +1,6 @@
 package com.ezhilan.cine.domain.useCases.home
 
-import com.ezhilan.cine.data.model.remote.response.Genre
+import com.ezhilan.cine.data.model.remote.response.home.Genre
 import com.ezhilan.cine.data.util.DataState
 import com.ezhilan.cine.domain.repository.HomeRepository
 import kotlinx.coroutines.flow.Flow
