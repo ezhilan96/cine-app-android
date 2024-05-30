@@ -32,6 +32,7 @@ interface HomeRepository {
     ): Flow<DataState<ListResponse<PeopleResult>>>
 
     fun getMovieGenres(): Flow<DataState<GenreResponse>>
+
     fun getTvGenres(): Flow<DataState<GenreResponse>>
 
     fun getMovieList(
@@ -43,4 +44,9 @@ interface HomeRepository {
         tvListType: String,
         page: Int = 1,
     ): Flow<DataState<ListResponse<TvResult>>>
+
+    fun getPopularPeopleList(
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<PeopleResult>>>
+
 }

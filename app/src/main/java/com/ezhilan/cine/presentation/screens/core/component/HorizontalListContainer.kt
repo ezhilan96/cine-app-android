@@ -35,7 +35,7 @@ fun HorizontalListContainer(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(text = label, style = MaterialTheme.textStyle.dashboardTitle)
+        Text(text = label, style = MaterialTheme.textStyle.defaultTitle)
         TextButton(onClick = onViewAllClick) {
             Text(
                 text = "View all",

@@ -92,7 +92,7 @@ fun MediaListView(
                                         .padding(vertical = MaterialTheme.spacing.unit2),
                                     text = trendingData.mediaType.toString()
                                         .replaceFirstChar { it.titlecase(Locale.ROOT) },
-                                    style = MaterialTheme.textStyle.trendingCardMediaType,
+                                    style = MaterialTheme.textStyle.cardMediaType,
                                     color = MaterialTheme.colorScheme.inverseOnSurface,
                                 )
                             }
@@ -107,7 +107,7 @@ fun MediaListView(
                     ) {
                         Text(
                             text = trendingData.releaseYear?:"-",
-                            style = MaterialTheme.textStyle.trendingCardYear,
+                            style = MaterialTheme.textStyle.cardYear,
                         )
                         Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
 
@@ -125,7 +125,7 @@ fun MediaListView(
                             Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
                             Text(
                                 text = trendingData.rating?:"-",
-                                style = MaterialTheme.textStyle.trendingCardRating,
+                                style = MaterialTheme.textStyle.cardRating,
                                 maxLines = 1,
                             )
                         }
@@ -136,7 +136,7 @@ fun MediaListView(
                     Text(
                         modifier = modifier.width(maxItemWidth),
                         text = trendingData.title,
-                        style = MaterialTheme.textStyle.trendingCardTitle,
+                        style = MaterialTheme.textStyle.cardTitle,
                     )
                 }
             }

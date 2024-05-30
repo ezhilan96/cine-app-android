@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
 import com.ezhilan.cine.domain.useCases.home.GetMovieListUseCase
+import com.ezhilan.cine.domain.useCases.home.GetPeopleListUseCase
 import com.ezhilan.cine.domain.useCases.home.GetTVListUseCase
 import com.ezhilan.cine.domain.useCases.home.MovieListType
 import com.ezhilan.cine.domain.useCases.home.TvListType
@@ -23,8 +24,8 @@ data class DiscoverScreenUiState(
     override val screenStack: List<DiscoverNavigationItem> = listOf(),
     override val alertMessage: UiText = UiText.Value(),
     val searchQuery: String = "",
-    val mediaTypeList: List<MediaType> = MediaType.entries.filterNot { it == MediaType.all },
-    val selectedMediaTypeIndex: Int = 0,
+    val selectedMediaType: MediaType = MediaType.all,
+
     val nowPlayingMovies: List<MediaData> = emptyList(),
     val popularMovies: List<MediaData> = emptyList(),
     val topRatedMovies: List<MediaData> = emptyList(),
@@ -33,8 +34,13 @@ data class DiscoverScreenUiState(
     val onTheAirTvShows: List<MediaData> = emptyList(),
     val popularTvShows: List<MediaData> = emptyList(),
     val topRatedTvShows: List<MediaData> = emptyList(),
-    val selectedMovieListType: MovieListType = MovieListType.now_playing,
-    val selectedTvListType: TvListType = TvListType.airing_today,
+    val popularPeople: List<MediaData> = emptyList(),
+
+    val viewAllDialogTitle: String = "",
+    val viewAllDialogList: List<MediaData> = emptyList(),
+    val viewAllDialogMediaType: MediaType = MediaType.movie,
+    val viewAllDialogMovieListType: MovieListType? = null,
+    val viewAllDialogTvListType: TvListType? = null,
 ) : ScreenUiState {
     override fun copyWith(isLoading: Boolean): ScreenUiState = copy(isLoading = isLoading)
 }
@@ -44,15 +50,11 @@ sealed class DiscoverScreenUiEvent {
     data object OnRefresh : DiscoverScreenUiEvent()
     data object OnLoadMore : DiscoverScreenUiEvent()
     data object OnMediaTypeClicked : DiscoverScreenUiEvent()
-    data class OnMediaTypeSelected(val index: Int) : DiscoverScreenUiEvent()
-    data object OnNowPlayingViewAllClicked : DiscoverScreenUiEvent()
-    data object OnPopularViewAllClicked : DiscoverScreenUiEvent()
-    data object OnTopRatedViewAllClicked : DiscoverScreenUiEvent()
-    data object OnUpcomingViewAllClicked : DiscoverScreenUiEvent()
-    data object OnAiringTodayViewAllClicked : DiscoverScreenUiEvent()
-    data object OnOnTheAirViewAllClicked : DiscoverScreenUiEvent()
-    data object OnPopularTvViewAllClicked : DiscoverScreenUiEvent()
-    data object OnTopRatedTvViewAllClicked : DiscoverScreenUiEvent()
+    data class OnMediaTypeSelected(val mediaType: MediaType) : DiscoverScreenUiEvent()
+    data class OnViewAllClicked(
+        val movieListType: MovieListType? = null, val tvListType: TvListType? = null
+    ) : DiscoverScreenUiEvent()
+
     data object Dismiss : DiscoverScreenUiEvent()
 }
 
@@ -60,28 +62,24 @@ sealed class DiscoverScreenUiEvent {
 class DiscoverScreenViewModel @Inject constructor(
     private val getMovieList: GetMovieListUseCase,
     private val getTvList: GetTVListUseCase,
+    private val getPeopleList: GetPeopleListUseCase,
 ) : ScreenViewModel<DiscoverScreenUiState, DiscoverScreenUiEvent>(DiscoverScreenUiState()) {
 
+    init {
+        refreshAllList()
+    }
+
     private fun refreshAllList() {
-        when (uiState.value.mediaTypeList[uiState.value.selectedMediaTypeIndex]) {
-            MediaType.movie -> viewModelScope.launch {
-                refreshMovieList(movieListType = MovieListType.now_playing)
-                refreshMovieList(movieListType = MovieListType.popular)
-                refreshMovieList(movieListType = MovieListType.top_rated)
-                refreshMovieList(movieListType = MovieListType.upcoming)
-            }
-
-            MediaType.tv -> {
-                viewModelScope.launch {
-                    refreshTvList(tvListType = TvListType.airing_today)
-                    refreshTvList(tvListType = TvListType.on_the_air)
-                    refreshTvList(tvListType = TvListType.popular)
-                    refreshTvList(tvListType = TvListType.top_rated)
-                }
-            }
-
-            MediaType.person -> {}
-            else -> {}
+        viewModelScope.launch {
+            refreshMovieList(movieListType = MovieListType.now_playing)
+            refreshMovieList(movieListType = MovieListType.popular)
+            refreshMovieList(movieListType = MovieListType.top_rated)
+            refreshMovieList(movieListType = MovieListType.upcoming)
+            refreshTvList(tvListType = TvListType.airing_today)
+            refreshTvList(tvListType = TvListType.on_the_air)
+            refreshTvList(tvListType = TvListType.popular)
+            refreshTvList(tvListType = TvListType.top_rated)
+            refreshPeopleList()
         }
     }
 
@@ -145,20 +143,36 @@ class DiscoverScreenViewModel @Inject constructor(
         }
     }
 
+    private fun refreshPeopleList(isPagingEnabled: Boolean = false) {
+        viewModelScope.launch {
+            getPeopleList(
+                pagingEnabled = isPagingEnabled,
+            ).collectDataState { dataState ->
+                updateUiState { currentState ->
+                    currentState.copy(
+                        popularPeople = mutableListOf<MediaData>().apply { addAll(dataState.data) },
+                    )
+                }
+            }
+        }
+    }
+
     override fun onUiEvent(event: DiscoverScreenUiEvent) {
         when (event) {
             DiscoverScreenUiEvent.OnRefresh -> refreshAllList()
             DiscoverScreenUiEvent.OnLoadMore -> viewModelScope.launch {
-                when (uiState.value.mediaTypeList[uiState.value.selectedMediaTypeIndex]) {
+                when (uiState.value.viewAllDialogMediaType) {
                     MediaType.movie -> refreshMovieList(
                         isPagingEnabled = true,
-                        movieListType = uiState.value.selectedMovieListType,
+                        movieListType = uiState.value.viewAllDialogMovieListType!!,
                     )
 
                     MediaType.tv -> refreshTvList(
                         isPagingEnabled = true,
-                        tvListType = uiState.value.selectedTvListType,
+                        tvListType = uiState.value.viewAllDialogTvListType!!,
                     )
+
+                    MediaType.person -> refreshPeopleList(isPagingEnabled = true)
 
                     else -> {}
                 }
@@ -174,7 +188,7 @@ class DiscoverScreenViewModel @Inject constructor(
 
             is DiscoverScreenUiEvent.OnMediaTypeSelected -> updateUiState { currentState ->
                 currentState.copy(
-                    selectedMediaTypeIndex = event.index,
+                    selectedMediaType = event.mediaType,
                     screenStack = currentState.screenStack.toMutableList().apply {
                         remove(DiscoverNavigationItem.MEDIA_TYPE_DD)
                     },
@@ -185,76 +199,56 @@ class DiscoverScreenViewModel @Inject constructor(
                 currentState.copy(searchQuery = event.query)
             }
 
-            DiscoverScreenUiEvent.OnNowPlayingViewAllClicked -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        add(DiscoverNavigationItem.VIEW_ALL_LIST)
-                    },
-                    selectedMovieListType = MovieListType.now_playing,
-                )
-            }
+            is DiscoverScreenUiEvent.OnViewAllClicked -> {
+                val currentMediaType = when {
+                    event.movieListType != null -> MediaType.movie
+                    event.tvListType != null -> MediaType.tv
+                    else -> MediaType.person
+                }
+                updateUiState { currentState ->
+                    currentState.copy(
+                        screenStack = currentState.screenStack.toMutableList().apply {
+                            add(DiscoverNavigationItem.VIEW_ALL_LIST)
+                        },
+                        viewAllDialogMediaType = currentMediaType,
+                        viewAllDialogMovieListType = event.movieListType,
+                        viewAllDialogTvListType = event.tvListType,
+                        viewAllDialogTitle = when (currentMediaType) {
+                            MediaType.movie -> when (event.movieListType!!) {
+                                MovieListType.now_playing -> "Movies Now playing"
+                                MovieListType.popular -> "Popular movies"
+                                MovieListType.top_rated -> "Top rated movies"
+                                MovieListType.upcoming -> "Upcoming movies"
+                            }
 
-            DiscoverScreenUiEvent.OnPopularViewAllClicked -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        add(DiscoverNavigationItem.VIEW_ALL_LIST)
-                    },
-                    selectedMovieListType = MovieListType.popular,
-                )
-            }
+                            MediaType.tv -> when (event.tvListType!!) {
+                                TvListType.airing_today -> "Tv shows Airing today"
+                                TvListType.on_the_air -> "Tv shows On the air"
+                                TvListType.popular -> "Popular tv shows"
+                                TvListType.top_rated -> "Top rated tv shows"
+                            }
 
-            DiscoverScreenUiEvent.OnTopRatedViewAllClicked -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        add(DiscoverNavigationItem.VIEW_ALL_LIST)
-                    },
-                    selectedMovieListType = MovieListType.top_rated,
-                )
-            }
+                            else -> "Popular people"
+                        },
+                        viewAllDialogList = when (currentMediaType) {
+                            MediaType.movie -> when (event.movieListType!!) {
+                                MovieListType.now_playing -> uiState.value.nowPlayingMovies
+                                MovieListType.popular -> uiState.value.popularMovies
+                                MovieListType.top_rated -> uiState.value.topRatedMovies
+                                MovieListType.upcoming -> uiState.value.upcomingMovies
+                            }
 
-            DiscoverScreenUiEvent.OnUpcomingViewAllClicked -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        add(DiscoverNavigationItem.VIEW_ALL_LIST)
-                    },
-                    selectedMovieListType = MovieListType.upcoming,
-                )
-            }
+                            MediaType.tv -> when (event.tvListType!!) {
+                                TvListType.airing_today -> uiState.value.airingTodayTvShows
+                                TvListType.on_the_air -> uiState.value.onTheAirTvShows
+                                TvListType.popular -> uiState.value.popularTvShows
+                                TvListType.top_rated -> uiState.value.topRatedTvShows
+                            }
 
-            DiscoverScreenUiEvent.OnAiringTodayViewAllClicked -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        add(DiscoverNavigationItem.VIEW_ALL_LIST)
-                    },
-                    selectedTvListType = TvListType.airing_today,
-                )
-            }
-
-            DiscoverScreenUiEvent.OnOnTheAirViewAllClicked -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        add(DiscoverNavigationItem.VIEW_ALL_LIST)
-                    },
-                    selectedTvListType = TvListType.on_the_air,
-                )
-            }
-
-            DiscoverScreenUiEvent.OnPopularTvViewAllClicked -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        add(DiscoverNavigationItem.VIEW_ALL_LIST)
-                    },
-                    selectedTvListType = TvListType.popular,
-                )
-            }
-
-            DiscoverScreenUiEvent.OnTopRatedTvViewAllClicked -> updateUiState { currentState ->
-                currentState.copy(
-                    screenStack = currentState.screenStack.toMutableList().apply {
-                        add(DiscoverNavigationItem.VIEW_ALL_LIST)
-                    },
-                    selectedTvListType = TvListType.top_rated,
-                )
+                            else -> uiState.value.popularPeople
+                        }
+                    )
+                }
             }
 
             DiscoverScreenUiEvent.Dismiss -> updateUiState { currentState ->

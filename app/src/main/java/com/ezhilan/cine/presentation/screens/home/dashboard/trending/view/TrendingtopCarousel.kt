@@ -123,7 +123,7 @@ fun TrendingtopCarousel(
                                         .alignByBaseline()
                                         .weight(1f),
                                     text = trendingList[page].title,
-                                    style = MaterialTheme.textStyle.trendingCarouselTitle,
+                                    style = MaterialTheme.textStyle.carouselTitle,
                                 )
                                 Spacer(modifier = modifier.width(MaterialTheme.spacing.grid1))
                                 Row(
@@ -140,7 +140,7 @@ fun TrendingtopCarousel(
                                     Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
                                     Text(
                                         text = trendingList[page].rating ?: "-",
-                                        style = MaterialTheme.textStyle.trendingCarouselRating,
+                                        style = MaterialTheme.textStyle.carouselRating,
                                         maxLines = 1,
                                     )
                                 }
@@ -157,26 +157,26 @@ fun TrendingtopCarousel(
                                         .padding(vertical = MaterialTheme.spacing.unit2),
                                     text = trendingList[page].mediaType.toString()
                                         .replaceFirstChar { it.titlecase(Locale.ROOT) },
-                                    style = MaterialTheme.textStyle.trendingCarouselMediaType,
+                                    style = MaterialTheme.textStyle.carouselMediaType,
                                     color = MaterialTheme.colorScheme.inverseOnSurface,
                                 )
                                 Text(text = " • ")
                                 Text(
                                     text = trendingList[page].releaseYear ?: "-",
-                                    style = MaterialTheme.textStyle.trendingCarouselYear,
+                                    style = MaterialTheme.textStyle.carouselYear,
                                 )
                                 Text(text = " • ")
                                 Text(
                                     text = trendingList[page].genres?.mapNotNull { it.name }
                                         ?.joinToString(", ") ?: "-",
-                                    style = MaterialTheme.textStyle.trendingCarouselGenre,
+                                    style = MaterialTheme.textStyle.carouselGenre,
                                     maxLines = 1,
                                 )
                             }
                             Text(
                                 modifier = modifier.weight(1f),
                                 text = trendingList[page].overview ?: "-",
-                                style = MaterialTheme.textStyle.trendingCarouselOverview,
+                                style = MaterialTheme.textStyle.carouselOverview,
                                 overflow = TextOverflow.Ellipsis,
                             )
                         }

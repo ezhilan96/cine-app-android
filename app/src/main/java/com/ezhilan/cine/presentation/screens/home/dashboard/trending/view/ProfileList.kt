@@ -31,7 +31,7 @@ import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.
 @Composable
 fun ProfileList(
     modifier: Modifier = Modifier,
-    trendingList: List<MediaData>,
+    peopleList: List<MediaData>,
 ) {
     val localDensity = LocalDensity.current
     var screenWidth by remember { mutableStateOf(0.dp) }
@@ -44,7 +44,7 @@ fun ProfileList(
             },
         verticalAlignment = Alignment.Top,
     ) {
-        trendingList.forEach { trendingData ->
+        peopleList.forEach { trendingData ->
             item { Spacer(modifier = modifier.width(MaterialTheme.spacing.grid1)) }
             item {
                 Column {
@@ -68,13 +68,13 @@ fun ProfileList(
                     Text(
                         modifier = modifier.width(maxItemWidth),
                         text = trendingData.title,
-                        style = MaterialTheme.textStyle.trendingCardTitle,
+                        style = MaterialTheme.textStyle.cardTitle,
                     )
                     Spacer(modifier = modifier.height(MaterialTheme.spacing.grid05))
 
                     Text(
                         text = trendingData.peopleType ?: "-",
-                        style = MaterialTheme.textStyle.trendingCardYear,
+                        style = MaterialTheme.textStyle.cardYear,
                     )
                 }
             }
@@ -90,7 +90,7 @@ private fun MediaListPreview() {
     CineTheme {
         Surface {
             ProfileList(
-                trendingList = listOf(
+                peopleList = listOf(
                     MediaData(
                         id = "",
                         title = "Title",

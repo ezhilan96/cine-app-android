@@ -163,7 +163,7 @@ fun MediaItemView(modifier: Modifier = Modifier, mediaData: MediaData) {
                             .padding(vertical = MaterialTheme.spacing.unit2),
                         text = mediaData.mediaType.toString()
                             .replaceFirstChar { it.titlecase(Locale.ROOT) },
-                        style = MaterialTheme.textStyle.trendingCardMediaType,
+                        style = MaterialTheme.textStyle.cardMediaType,
                         color = MaterialTheme.colorScheme.inverseOnSurface,
                     )
                 }
@@ -178,7 +178,7 @@ fun MediaItemView(modifier: Modifier = Modifier, mediaData: MediaData) {
         ) {
             Text(
                 text = mediaData.releaseYear ?: "-",
-                style = MaterialTheme.textStyle.trendingCardYear,
+                style = MaterialTheme.textStyle.cardYear,
             )
             Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
 
@@ -196,7 +196,7 @@ fun MediaItemView(modifier: Modifier = Modifier, mediaData: MediaData) {
                 Spacer(modifier = modifier.width(MaterialTheme.spacing.grid05))
                 Text(
                     text = mediaData.rating ?: "-",
-                    style = MaterialTheme.textStyle.trendingCardRating,
+                    style = MaterialTheme.textStyle.cardRating,
                     maxLines = 1,
                 )
             }
@@ -207,7 +207,7 @@ fun MediaItemView(modifier: Modifier = Modifier, mediaData: MediaData) {
         Text(
             modifier = modifier.fillMaxWidth(),
             text = mediaData.title,
-            style = MaterialTheme.textStyle.trendingCardTitle,
+            style = MaterialTheme.textStyle.cardTitle,
         )
     }
 }
@@ -233,13 +233,13 @@ fun PeopleItemView(modifier: Modifier = Modifier, mediaData: MediaData) {
         Text(
             modifier = modifier.fillMaxWidth(),
             text = mediaData.title,
-            style = MaterialTheme.textStyle.trendingCardTitle,
+            style = MaterialTheme.textStyle.cardTitle,
         )
         Spacer(modifier = modifier.height(MaterialTheme.spacing.grid05))
 
         Text(
             text = mediaData.peopleType ?: "-",
-            style = MaterialTheme.textStyle.trendingCardYear,
+            style = MaterialTheme.textStyle.cardYear,
         )
     }
 }

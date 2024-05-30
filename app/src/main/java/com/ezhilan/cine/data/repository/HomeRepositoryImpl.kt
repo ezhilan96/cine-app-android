@@ -102,4 +102,10 @@ class HomeRepositoryImpl @Inject constructor(
                 page = page,
             )
         }
+
+    override fun getPopularPeopleList(page: Int): Flow<DataState<ListResponse<PeopleResult>>> =
+        executeRemoteCall {
+            homeService.getPopularPeople(page = page)
+        }
+
 }

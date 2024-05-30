@@ -2,9 +2,7 @@
 
 package com.ezhilan.cine.presentation.screens.home.dashboard.trending
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -46,12 +43,11 @@ import com.ezhilan.cine.presentation.config.spacing
 import com.ezhilan.cine.presentation.config.textStyle
 import com.ezhilan.cine.presentation.screens.core.component.HorizontalListContainer
 import com.ezhilan.cine.presentation.screens.core.component.PullToRefreshContainer
+import com.ezhilan.cine.presentation.screens.core.component.TopProgressIndicator
 import com.ezhilan.cine.presentation.screens.core.dialog.MediaListDialog
-import com.ezhilan.cine.presentation.screens.home.dashboard.trending.components.RotatingHourGlass
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.MediaListView
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.ProfileList
 import com.ezhilan.cine.presentation.screens.home.dashboard.trending.view.TrendingtopCarousel
-import com.ezhilan.cine.presentation.util.enableGesture
 
 @Composable
 fun TrendingDestination(
@@ -59,32 +55,16 @@ fun TrendingDestination(
     viewModel: TrendingScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Box(modifier = modifier.fillMaxSize()) {
-        PullToRefreshContainer(
-            modifier = modifier.fillMaxSize(),
-            isLoading = uiState.isLoading,
-            onRefresh = { viewModel.onUiEvent(TrendingScreenUiEvent.OnRefresh) },
-        ) {
-            TrendingScreen(
-                modifier = modifier,
-                uiState = uiState,
-                uiEvent = viewModel::onUiEvent,
-            )
-        }
-
-        if (uiState.isLoading) {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.75f))
-            ) {
-                RotatingHourGlass(
-                    modifier = modifier
-                        .align(Alignment.Center)
-                        .size(MaterialTheme.spacing.grid5)
-                )
-            }
-        }
+    PullToRefreshContainer(
+        modifier = modifier.fillMaxSize(),
+        isLoading = uiState.isLoading,
+        onRefresh = { viewModel.onUiEvent(TrendingScreenUiEvent.OnRefresh) },
+    ) {
+        TrendingScreen(
+            modifier = modifier,
+            uiState = uiState,
+            uiEvent = viewModel::onUiEvent,
+        )
     }
 
     if (uiState.screenStack.contains(TrendingNavigationItem.VIEW_ALL_LIST)) {
@@ -116,73 +96,75 @@ fun TrendingScreen(
     uiEvent: (TrendingScreenUiEvent) -> Unit,
 ) {
     Scaffold(
-        modifier = modifier.enableGesture(!uiState.isLoading),
         topBar = {
-            TopAppBar(title = {
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
-                        modifier = modifier.height(IntrinsicSize.Max),
-                        text = "Trending",
-                    )
-                    Spacer(modifier = modifier.width(MaterialTheme.spacing.grid1))
-                    ExposedDropdownMenuBox(
-                        modifier = modifier.padding(bottom = MaterialTheme.spacing.unit4),
-                        expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
-                        onExpandedChange = {
-                            if (!it) {
-                                uiEvent(TrendingScreenUiEvent.Dismiss)
-                            }
-                        },
-                    ) {
-                        FilledTonalButton(
-                            modifier = modifier
-                                .menuAnchor()
-                                .height(MaterialTheme.spacing.grid2),
-                            onClick = { uiEvent(TrendingScreenUiEvent.ShowTimeWindowDD) },
-                            contentPadding = PaddingValues(0.dp),
-                            shape = MaterialTheme.shapes.extraSmall,
-                        ) {
-                            Spacer(modifier = modifier.width(MaterialTheme.spacing.unit4))
-                            Text(
-                                text = uiState.timeWindowList[uiState.selectedTimeWindowIndex],
-                                style = MaterialTheme.textStyle.trendingScreenTitleSmall,
-                            )
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null,
-                            )
-                        }
-                        DropdownMenu(
+            Column {
+                TopAppBar(title = {
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(
+                            modifier = modifier.height(IntrinsicSize.Max),
+                            text = "Trending",
+                        )
+                        Spacer(modifier = modifier.width(MaterialTheme.spacing.grid1))
+                        ExposedDropdownMenuBox(
+                            modifier = modifier.padding(bottom = MaterialTheme.spacing.unit4),
                             expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
-                            onDismissRequest = { uiEvent(TrendingScreenUiEvent.Dismiss) },
+                            onExpandedChange = {
+                                if (!it) {
+                                    uiEvent(TrendingScreenUiEvent.Dismiss)
+                                }
+                            },
                         ) {
-                            listOf("Today", "This week").forEachIndexed { index, item ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(
-                                            modifier = modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                        ) {
-                                            Text(text = item)
-                                            if (uiState.selectedTimeWindowIndex == index) {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.ic_check),
-                                                    contentDescription = null,
-                                                )
-                                            }
-                                        }
-                                    },
-                                    onClick = {
-                                        uiEvent(
-                                            TrendingScreenUiEvent.OnTimeWindowSelected(index)
-                                        )
-                                    },
+                            FilledTonalButton(
+                                modifier = modifier
+                                    .menuAnchor()
+                                    .height(MaterialTheme.spacing.grid2),
+                                onClick = { uiEvent(TrendingScreenUiEvent.ShowTimeWindowDD) },
+                                contentPadding = PaddingValues(0.dp),
+                                shape = MaterialTheme.shapes.extraSmall,
+                            ) {
+                                Spacer(modifier = modifier.width(MaterialTheme.spacing.unit4))
+                                Text(
+                                    text = uiState.timeWindowList[uiState.selectedTimeWindowIndex],
+                                    style = MaterialTheme.textStyle.defaultTitleSmall,
                                 )
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
+                                onDismissRequest = { uiEvent(TrendingScreenUiEvent.Dismiss) },
+                            ) {
+                                listOf("Today", "This week").forEachIndexed { index, item ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(
+                                                modifier = modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                            ) {
+                                                Text(text = item)
+                                                if (uiState.selectedTimeWindowIndex == index) {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.ic_check),
+                                                        contentDescription = null,
+                                                    )
+                                                }
+                                            }
+                                        },
+                                        onClick = {
+                                            uiEvent(
+                                                TrendingScreenUiEvent.OnTimeWindowSelected(index)
+                                            )
+                                        },
+                                    )
+                                }
                             }
                         }
                     }
-                }
-            })
+                })
+                TopProgressIndicator(isLoading = uiState.isLoading)
+            }
         },
     ) { safeAreaPadding ->
         Column(
@@ -216,7 +198,7 @@ fun TrendingScreen(
                 HorizontalListContainer(
                     label = "People",
                     onViewAllClick = { uiEvent(TrendingScreenUiEvent.OnViewAllPressed(MediaType.person)) },
-                    listView = { ProfileList(trendingList = uiState.trendingPeopleList) },
+                    listView = { ProfileList(peopleList = uiState.trendingPeopleList) },
                 )
             }
         }

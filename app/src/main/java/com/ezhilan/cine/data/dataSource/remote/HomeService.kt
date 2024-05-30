@@ -12,6 +12,12 @@ import retrofit2.http.Query
 
 interface HomeService {
 
+    @GET("3/genre/movie/list")
+    suspend fun getMovieGenres(): GenreResponse
+
+    @GET("3/genre/tv/list")
+    suspend fun getTvGenres(): GenreResponse
+
     @GET("/3/trending/all/{timeWindow}")
     suspend fun getAllTrending(
         @Path(value = "timeWindow") time: String,
@@ -36,12 +42,6 @@ interface HomeService {
         @Query("page") page: Int = 1,
     ): ListResponse<PeopleResult>
 
-    @GET("3/genre/movie/list")
-    suspend fun getMovieGenres(): GenreResponse
-
-    @GET("3/genre/tv/list")
-    suspend fun getTvGenres(): GenreResponse
-
     @GET("3/movie/{movieLisType}")
     suspend fun getMovieList(
         @Path(value = "movieLisType") movieListType: String,
@@ -54,5 +54,10 @@ interface HomeService {
         @Path(value = "tvListType") tvListType: String,
         @Query("page") page: Int = 1,
     ): ListResponse<TvResult>
+
+    @GET("3/person/popular")
+    suspend fun getPopularPeople(
+        @Query("page") page: Int = 1,
+    ): ListResponse<PeopleResult>
 
 }
