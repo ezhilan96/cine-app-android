@@ -3,6 +3,7 @@ package com.ezhilan.cine.presentation.screens.home.dashboard.discover
 import androidx.lifecycle.viewModelScope
 import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
+import com.ezhilan.cine.domain.useCases.home.SearchUseCase
 import com.ezhilan.cine.domain.useCases.home.discoverList.GetMovieListUseCase
 import com.ezhilan.cine.domain.useCases.home.discoverList.GetPeopleListUseCase
 import com.ezhilan.cine.domain.useCases.home.discoverList.GetTVListUseCase
@@ -23,18 +24,24 @@ data class DiscoverScreenUiState(
     override val isLoading: Boolean = true,
     override val screenStack: List<DiscoverNavigationItem> = listOf(),
     override val alertMessage: UiText = UiText.Value(),
-    val searchQuery: String = "",
     val selectedMediaType: MediaType = MediaType.all,
+    val searchQuery: String = "",
+    val searchState: Boolean = false,
+    val searchFilterMediaType: MediaType = MediaType.all,
 
     val nowPlayingMovies: List<MediaData> = emptyList(),
     val popularMovies: List<MediaData> = emptyList(),
     val topRatedMovies: List<MediaData> = emptyList(),
     val upcomingMovies: List<MediaData> = emptyList(),
+
     val airingTodayTvShows: List<MediaData> = emptyList(),
     val onTheAirTvShows: List<MediaData> = emptyList(),
     val popularTvShows: List<MediaData> = emptyList(),
     val topRatedTvShows: List<MediaData> = emptyList(),
+
     val popularPeople: List<MediaData> = emptyList(),
+
+    val searchResult: List<MediaData> = emptyList(),
 
     val viewAllDialogTitle: String = "",
     val viewAllDialogList: List<MediaData> = emptyList(),
@@ -47,8 +54,11 @@ data class DiscoverScreenUiState(
 
 sealed class DiscoverScreenUiEvent {
     data class OnSearchQueryChanged(val query: String) : DiscoverScreenUiEvent()
+    data class OnSearchStateChanged(val state: Boolean) : DiscoverScreenUiEvent()
+    data class OnSearchFilterChanged(val mediaType: MediaType) : DiscoverScreenUiEvent()
     data object OnRefresh : DiscoverScreenUiEvent()
     data object OnLoadMore : DiscoverScreenUiEvent()
+    data object OnLoadMoreQueries : DiscoverScreenUiEvent()
     data object OnMediaTypeClicked : DiscoverScreenUiEvent()
     data class OnMediaTypeSelected(val mediaType: MediaType) : DiscoverScreenUiEvent()
     data class OnViewAllClicked(
@@ -63,6 +73,7 @@ class DiscoverScreenViewModel @Inject constructor(
     private val getMovieList: GetMovieListUseCase,
     private val getTvList: GetTVListUseCase,
     private val getPeopleList: GetPeopleListUseCase,
+    private val search: SearchUseCase,
 ) : ScreenViewModel<DiscoverScreenUiState, DiscoverScreenUiEvent>(DiscoverScreenUiState()) {
 
     init {
@@ -160,6 +171,7 @@ class DiscoverScreenViewModel @Inject constructor(
     override fun onUiEvent(event: DiscoverScreenUiEvent) {
         when (event) {
             DiscoverScreenUiEvent.OnRefresh -> refreshAllList()
+
             DiscoverScreenUiEvent.OnLoadMore -> viewModelScope.launch {
                 when (uiState.value.viewAllDialogMediaType) {
                     MediaType.movie -> refreshMovieList(
@@ -178,6 +190,8 @@ class DiscoverScreenViewModel @Inject constructor(
                 }
             }
 
+            DiscoverScreenUiEvent.OnLoadMoreQueries -> search(pagingEnabled = true)
+
             DiscoverScreenUiEvent.OnMediaTypeClicked -> updateUiState { currentState ->
                 currentState.copy(
                     screenStack = currentState.screenStack.toMutableList().apply {
@@ -195,8 +209,30 @@ class DiscoverScreenViewModel @Inject constructor(
                 )
             }
 
-            is DiscoverScreenUiEvent.OnSearchQueryChanged -> updateUiState { currentState ->
-                currentState.copy(searchQuery = event.query)
+            is DiscoverScreenUiEvent.OnSearchQueryChanged -> {
+                updateUiState { currentState ->
+                    currentState.copy(searchQuery = event.query)
+                }
+                if (uiState.value.searchQuery.length > 3) {
+                    search()
+                } else {
+                    updateUiState { currentState ->
+                        currentState.copy(searchResult = listOf())
+                    }
+                }
+            }
+
+            is DiscoverScreenUiEvent.OnSearchStateChanged -> {
+                updateUiState { currentState ->
+                    currentState.copy(searchState = event.state)
+                }
+            }
+
+            is DiscoverScreenUiEvent.OnSearchFilterChanged -> {
+                updateUiState { currentState ->
+                    currentState.copy(searchFilterMediaType = event.mediaType)
+                }
+                search()
             }
 
             is DiscoverScreenUiEvent.OnViewAllClicked -> {
@@ -253,6 +289,22 @@ class DiscoverScreenViewModel @Inject constructor(
 
             DiscoverScreenUiEvent.Dismiss -> updateUiState { currentState ->
                 currentState.copy(screenStack = listOf())
+            }
+        }
+    }
+
+    private fun search(pagingEnabled: Boolean = false) {
+        viewModelScope.launch {
+            search(
+                query = uiState.value.searchQuery,
+                mediaType = uiState.value.searchFilterMediaType,
+                pagingEnabled = pagingEnabled,
+            ).collectDataState { dataState ->
+                updateUiState { currentState ->
+                    currentState.copy(
+                        searchResult = dataState.data,
+                    )
+                }
             }
         }
     }

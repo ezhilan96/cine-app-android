@@ -60,4 +60,28 @@ interface HomeService {
         @Query("page") page: Int = 1,
     ): ListResponse<PeopleResult>
 
+    @GET("3/search/multi")
+    suspend fun search(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<MediaResult>
+
+    @GET("3/search/movie")
+    suspend fun searchMovie(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<MovieResult>
+
+    @GET("3/search/tv")
+    suspend fun searchTv(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<TvResult>
+
+    @GET("3/search/person")
+    suspend fun searchPeople(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<PeopleResult>
+
 }

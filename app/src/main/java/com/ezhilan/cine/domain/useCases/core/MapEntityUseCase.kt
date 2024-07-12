@@ -45,6 +45,36 @@ class MapEntityUseCase @Inject constructor(
                 overview = response.overview ?: "-",
                 backdropPath = response.backdrop_path?.ifEmpty { null },
                 posterPath = response.poster_path?.ifEmpty { null },
+                profilePath = response.profile_path?.ifEmpty { null },
+                peopleType = when (response.known_for_department) {
+                    "Acting" -> {
+                        when (response.gender) {
+                            1 -> "Actress"
+                            2 -> "Actor"
+                            else -> "Actor/Actress"
+                        }
+                    }
+
+                    "Directing" -> {
+                        "Director"
+                    }
+
+                    "Sound" -> {
+                        "Music composer"
+                    }
+
+                    "Art" -> {
+                        "Artist"
+                    }
+
+                    "Camera" -> {
+                        "Cinematographer"
+                    }
+
+                    else -> {
+                        ""
+                    }
+                },
                 releaseYear = when (mediaType) {
                     MediaType.movie -> response.release_date?.split("-")?.first() ?: "-"
 
@@ -155,6 +185,10 @@ class MapEntityUseCase @Inject constructor(
 
                     "Camera" -> {
                         "Cinematographer"
+                    }
+
+                    "Writing" -> {
+                        "Writer"
                     }
 
                     else -> {

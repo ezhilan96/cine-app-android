@@ -26,10 +26,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -42,17 +39,19 @@ fun TopBarWithSearchBar(
     modifier: Modifier = Modifier,
     query: String,
     onQueryChanged: (String) -> Unit,
+    searchStatus: Boolean,
+    onSearchStatusChanged: (Boolean) -> Unit,
+    placeholderText: String = "Search",
     title: @Composable () -> Unit,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    var isSearchEnabled by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AnimatedVisibility(
-            visible = !isSearchEnabled,
+            visible = !searchStatus,
             enter = fadeIn() + expandHorizontally(
                 expandFrom = Alignment.Start,
                 clip = false,
@@ -67,11 +66,7 @@ fun TopBarWithSearchBar(
                 title = {},
                 actions = {
                     actions()
-                    FilledTonalIconButton(
-                        onClick = {
-                            isSearchEnabled = true
-                        },
-                    ) {
+                    FilledTonalIconButton(onClick = { onSearchStatusChanged(true) }) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = null,
@@ -83,7 +78,7 @@ fun TopBarWithSearchBar(
 
         AnimatedVisibility(
             modifier = modifier.weight(1f),
-            visible = isSearchEnabled,
+            visible = searchStatus,
             enter = fadeIn() + expandHorizontally(
                 expandFrom = Alignment.End,
                 clip = false,
@@ -113,7 +108,7 @@ fun TopBarWithSearchBar(
                             if (query.isNotEmpty()) {
                                 onQueryChanged("")
                             } else {
-                                isSearchEnabled = false
+                                onSearchStatusChanged(false)
                             }
                         },
                     ) {
@@ -124,7 +119,7 @@ fun TopBarWithSearchBar(
                     }
                 },
                 placeholder = {
-                    Text(text = "Search")
+                    Text(text = placeholderText)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 colors = TextFieldDefaults.colors().copy(
