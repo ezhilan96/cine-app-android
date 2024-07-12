@@ -49,4 +49,24 @@ interface HomeRepository {
         page: Int = 1,
     ): Flow<DataState<ListResponse<PeopleResult>>>
 
+    fun search(
+        query: String,
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<MediaResult>>>
+
+    fun searchMovie(
+        query: String,
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<MovieResult>>>
+
+    fun searchTv(
+        query: String,
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<TvResult>>>
+
+    fun searchPeople(
+        query: String,
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<PeopleResult>>>
+
 }

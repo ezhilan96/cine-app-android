@@ -108,4 +108,25 @@ class HomeRepositoryImpl @Inject constructor(
             homeService.getPopularPeople(page = page)
         }
 
+    override fun search(query: String, page: Int): Flow<DataState<ListResponse<MediaResult>>> =
+        executeRemoteCall {
+            homeService.search(query = query, page = page)
+        }
+
+    override fun searchMovie(query: String, page: Int): Flow<DataState<ListResponse<MovieResult>>> =
+        executeRemoteCall {
+            homeService.searchMovie(query = query, page = page)
+        }
+
+    override fun searchTv(query: String, page: Int): Flow<DataState<ListResponse<TvResult>>> =
+        executeRemoteCall {
+            homeService.searchTv(query = query, page = page)
+        }
+
+    override fun searchPeople(
+        query: String, page: Int
+    ): Flow<DataState<ListResponse<PeopleResult>>> = executeRemoteCall {
+        homeService.searchPeople(query = query, page = page)
+    }
+
 }
