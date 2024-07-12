@@ -33,6 +33,9 @@ sealed class SettingsScreenUiEvent {
 class SettingsViewModel @Inject constructor(private val dataStore: UserPreferencesDataStore) :
     ViewModel() {
 
+    private val _uiState = MutableStateFlow(SettingsScreenUiState())
+    val uiState: StateFlow<SettingsScreenUiState> = _uiState
+
     init {
         viewModelScope.launch {
             dataStore.appTheme.collect { appTheme ->
@@ -55,9 +58,6 @@ class SettingsViewModel @Inject constructor(private val dataStore: UserPreferenc
             }
         }
     }
-
-    private val _uiState = MutableStateFlow(SettingsScreenUiState())
-    val uiState: StateFlow<SettingsScreenUiState> = _uiState
 
     fun onUiEvent(event: SettingsScreenUiEvent) {
         when (event) {

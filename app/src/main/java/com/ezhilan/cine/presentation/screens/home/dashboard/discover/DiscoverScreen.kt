@@ -38,8 +38,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ezhilan.cine.R
 import com.ezhilan.cine.domain.entity.MediaType
-import com.ezhilan.cine.domain.useCases.home.MovieListType
-import com.ezhilan.cine.domain.useCases.home.TvListType
+import com.ezhilan.cine.domain.useCases.home.discoverList.MovieListType
+import com.ezhilan.cine.domain.useCases.home.discoverList.TvListType
 import com.ezhilan.cine.presentation.config.CineTheme
 import com.ezhilan.cine.presentation.config.spacing
 import com.ezhilan.cine.presentation.config.textStyle
@@ -93,12 +93,16 @@ fun DiscoverScreen(
         topBar = {
             Column {
                 TopBarWithSearchBar(
-                    query = "", onQueryChanged = {},
+                    query = "",
+                    onQueryChanged = {},
                     title = {
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
-                                modifier = modifier.height(IntrinsicSize.Max),
+                                modifier = modifier
+                                    .height(IntrinsicSize.Max)
+                                    .padding(start = MaterialTheme.spacing.grid05),
                                 text = "Discover",
+                                style = MaterialTheme.typography.titleLarge,
                             )
                             Spacer(modifier = modifier.width(MaterialTheme.spacing.grid1))
                             ExposedDropdownMenuBox(

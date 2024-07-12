@@ -63,7 +63,8 @@ fun TopBarWithSearchBar(
             ),
         ) {
             TopAppBar(
-                title = title,
+                navigationIcon = title,
+                title = {},
                 actions = {
                     actions()
                     FilledTonalIconButton(

@@ -98,71 +98,77 @@ fun TrendingScreen(
     Scaffold(
         topBar = {
             Column {
-                TopAppBar(title = {
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            modifier = modifier.height(IntrinsicSize.Max),
-                            text = "Trending",
-                        )
-                        Spacer(modifier = modifier.width(MaterialTheme.spacing.grid1))
-                        ExposedDropdownMenuBox(
-                            modifier = modifier.padding(bottom = MaterialTheme.spacing.unit4),
-                            expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
-                            onExpandedChange = {
-                                if (!it) {
-                                    uiEvent(TrendingScreenUiEvent.Dismiss)
-                                }
-                            },
-                        ) {
-                            FilledTonalButton(
+                TopAppBar(
+                    navigationIcon = {
+                        Row(verticalAlignment = Alignment.Bottom) {
+                            Text(
                                 modifier = modifier
-                                    .menuAnchor()
-                                    .height(MaterialTheme.spacing.grid2),
-                                onClick = { uiEvent(TrendingScreenUiEvent.ShowTimeWindowDD) },
-                                contentPadding = PaddingValues(0.dp),
-                                shape = MaterialTheme.shapes.extraSmall,
-                            ) {
-                                Spacer(modifier = modifier.width(MaterialTheme.spacing.unit4))
-                                Text(
-                                    text = uiState.timeWindowList[uiState.selectedTimeWindowIndex],
-                                    style = MaterialTheme.textStyle.defaultTitleSmall,
-                                )
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null,
-                                )
-                            }
-                            DropdownMenu(
+                                    .height(IntrinsicSize.Max)
+                                    .padding(start = MaterialTheme.spacing.grid05),
+                                text = "Trending",
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                            Spacer(modifier = modifier.width(MaterialTheme.spacing.grid1))
+                            ExposedDropdownMenuBox(
+                                modifier = modifier.padding(bottom = MaterialTheme.spacing.unit4),
                                 expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
-                                onDismissRequest = { uiEvent(TrendingScreenUiEvent.Dismiss) },
+                                onExpandedChange = {
+                                    if (!it) {
+                                        uiEvent(TrendingScreenUiEvent.Dismiss)
+                                    }
+                                },
                             ) {
-                                listOf("Today", "This week").forEachIndexed { index, item ->
-                                    DropdownMenuItem(
-                                        text = {
-                                            Row(
-                                                modifier = modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                            ) {
-                                                Text(text = item)
-                                                if (uiState.selectedTimeWindowIndex == index) {
-                                                    Icon(
-                                                        painter = painterResource(id = R.drawable.ic_check),
-                                                        contentDescription = null,
-                                                    )
-                                                }
-                                            }
-                                        },
-                                        onClick = {
-                                            uiEvent(
-                                                TrendingScreenUiEvent.OnTimeWindowSelected(index)
-                                            )
-                                        },
+                                FilledTonalButton(
+                                    modifier = modifier
+                                        .menuAnchor()
+                                        .height(MaterialTheme.spacing.grid2),
+                                    onClick = { uiEvent(TrendingScreenUiEvent.ShowTimeWindowDD) },
+                                    contentPadding = PaddingValues(0.dp),
+                                    shape = MaterialTheme.shapes.extraSmall,
+                                ) {
+                                    Spacer(modifier = modifier.width(MaterialTheme.spacing.unit4))
+                                    Text(
+                                        text = uiState.timeWindowList[uiState.selectedTimeWindowIndex],
+                                        style = MaterialTheme.textStyle.defaultTitleSmall,
                                     )
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = null,
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = uiState.screenStack.contains(TrendingNavigationItem.TIME_WINDOW_DD),
+                                    onDismissRequest = { uiEvent(TrendingScreenUiEvent.Dismiss) },
+                                ) {
+                                    listOf("Today", "This week").forEachIndexed { index, item ->
+                                        DropdownMenuItem(
+                                            text = {
+                                                Row(
+                                                    modifier = modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                                ) {
+                                                    Text(text = item)
+                                                    if (uiState.selectedTimeWindowIndex == index) {
+                                                        Icon(
+                                                            painter = painterResource(id = R.drawable.ic_check),
+                                                            contentDescription = null,
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            onClick = {
+                                                uiEvent(
+                                                    TrendingScreenUiEvent.OnTimeWindowSelected(index)
+                                                )
+                                            },
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
-                })
+                    },
+                    title = {},
+                )
                 TopProgressIndicator(isLoading = uiState.isLoading)
             }
         },

@@ -3,11 +3,11 @@ package com.ezhilan.cine.presentation.screens.home.dashboard.discover
 import androidx.lifecycle.viewModelScope
 import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
-import com.ezhilan.cine.domain.useCases.home.GetMovieListUseCase
-import com.ezhilan.cine.domain.useCases.home.GetPeopleListUseCase
-import com.ezhilan.cine.domain.useCases.home.GetTVListUseCase
-import com.ezhilan.cine.domain.useCases.home.MovieListType
-import com.ezhilan.cine.domain.useCases.home.TvListType
+import com.ezhilan.cine.domain.useCases.home.discoverList.GetMovieListUseCase
+import com.ezhilan.cine.domain.useCases.home.discoverList.GetPeopleListUseCase
+import com.ezhilan.cine.domain.useCases.home.discoverList.GetTVListUseCase
+import com.ezhilan.cine.domain.useCases.home.discoverList.MovieListType
+import com.ezhilan.cine.domain.useCases.home.discoverList.TvListType
 import com.ezhilan.cine.presentation.screens.core.ScreenUiState
 import com.ezhilan.cine.presentation.screens.core.ScreenViewModel
 import com.ezhilan.cine.presentation.util.UiText

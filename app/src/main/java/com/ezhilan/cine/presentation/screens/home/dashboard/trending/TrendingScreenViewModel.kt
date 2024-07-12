@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.ezhilan.cine.data.model.remote.response.home.Genre
 import com.ezhilan.cine.domain.entity.MediaData
 import com.ezhilan.cine.domain.entity.MediaType
-import com.ezhilan.cine.domain.useCases.home.GetTrendingListUseCase
+import com.ezhilan.cine.domain.useCases.home.trendingList.GetTrendingListUseCase
 import com.ezhilan.cine.presentation.screens.core.ScreenUiState
 import com.ezhilan.cine.presentation.screens.core.ScreenViewModel
 import com.ezhilan.cine.presentation.util.UiText

@@ -1,4 +1,4 @@
-package com.ezhilan.cine.domain.useCases.home
+package com.ezhilan.cine.domain.useCases.home.trendingList
 
 import com.ezhilan.cine.data.util.DataState
 import com.ezhilan.cine.domain.entity.MediaData
@@ -10,28 +10,23 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-enum class MovieListType { now_playing, popular, top_rated, upcoming, }
-
-class GetMovieListUseCase @Inject constructor(
+class GetAllTrendingListUseCase @Inject constructor(
     private val repo: HomeRepository,
     private val mapEntity: MapEntityUseCase,
 ) {
-    private var list: MutableList<MediaData> = mutableListOf()
     private var currentPage: Int = 0
-    private var movieListType: MovieListType = MovieListType.now_playing
-
+    private var list: MutableList<MediaData> = mutableListOf()
     operator fun invoke(
-        movieListType: MovieListType,
         pagingEnabled: Boolean = false,
+        timeWindow: String,
     ): Flow<DataState<List<MediaData>>> {
-        if (movieListType != this.movieListType || !pagingEnabled) {
-            list.clear()
-            this.movieListType = movieListType
+        if (!pagingEnabled) {
             currentPage = 0
+            list.clear()
         }
-        return repo.getMovieList(
-            movieListType = movieListType.toString(),
+        return repo.getAllTrending(
             page = currentPage + 1,
+            timeWindow = timeWindow,
         ).map { dataState ->
             when (dataState) {
                 is DataState.InProgress -> dataState
@@ -44,8 +39,8 @@ class GetMovieListUseCase @Inject constructor(
 
                 is DataState.Error -> if (currentPage > 0) {
                     invoke(
-                        movieListType = movieListType,
                         pagingEnabled = false,
+                        timeWindow = timeWindow,
                     ).filter { it !is DataState.InProgress }.first()
                 } else {
                     dataState
@@ -54,4 +49,3 @@ class GetMovieListUseCase @Inject constructor(
         }
     }
 }
-

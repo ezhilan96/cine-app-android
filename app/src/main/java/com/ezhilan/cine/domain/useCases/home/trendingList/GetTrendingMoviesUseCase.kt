@@ -1,4 +1,4 @@
-package com.ezhilan.cine.domain.useCases.home
+package com.ezhilan.cine.domain.useCases.home.trendingList
 
 import com.ezhilan.cine.data.util.DataState
 import com.ezhilan.cine.domain.entity.MediaData
@@ -10,24 +10,26 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetPeopleListUseCase @Inject constructor(
+class GetTrendingMoviesUseCase @Inject constructor(
     private val repo: HomeRepository,
     private val mapEntity: MapEntityUseCase,
 ) {
-    private var list: MutableList<MediaData> = mutableListOf()
     private var currentPage: Int = 0
-
-    operator fun invoke(pagingEnabled: Boolean = false): Flow<DataState<List<MediaData>>> {
+    private var list: MutableList<MediaData> = mutableListOf()
+    operator fun invoke(
+        pagingEnabled: Boolean = false,
+        timeWindow: String = "day",
+    ): Flow<DataState<List<MediaData>>> {
         if (!pagingEnabled) {
-            list.clear()
             currentPage = 0
+            list.clear()
         }
-        return repo.getPopularPeopleList(
+        return repo.getTrendingMovies(
             page = currentPage + 1,
+            timeWindow = timeWindow,
         ).map { dataState ->
             when (dataState) {
                 is DataState.InProgress -> dataState
-
                 is DataState.Success -> {
                     currentPage = dataState.data.page ?: 0
                     dataState.data.results?.mapNotNull { it?.let { mapEntity(it).first() } }
@@ -36,7 +38,10 @@ class GetPeopleListUseCase @Inject constructor(
                 }
 
                 is DataState.Error -> if (currentPage > 0) {
-                    invoke(pagingEnabled = false).filter { it !is DataState.InProgress }.first()
+                    invoke(
+                        pagingEnabled = false,
+                        timeWindow = timeWindow,
+                    ).filter { it !is DataState.InProgress }.first()
                 } else {
                     dataState
                 }

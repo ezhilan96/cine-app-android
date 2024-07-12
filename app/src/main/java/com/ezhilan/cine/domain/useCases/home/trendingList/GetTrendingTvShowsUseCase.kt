@@ -1,4 +1,4 @@
-package com.ezhilan.cine.domain.useCases.home
+package com.ezhilan.cine.domain.useCases.home.trendingList
 
 import com.ezhilan.cine.data.util.DataState
 import com.ezhilan.cine.domain.entity.MediaData
@@ -10,28 +10,23 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-enum class TvListType { airing_today, on_the_air, popular, top_rated }
-
-class GetTVListUseCase @Inject constructor(
+class GetTrendingTvShowsUseCase @Inject constructor(
     private val repo: HomeRepository,
     private val mapEntity: MapEntityUseCase,
 ) {
-    private var list: MutableList<MediaData> = mutableListOf()
     private var currentPage: Int = 0
-    private var tvListType: TvListType = TvListType.airing_today
-
+    private var list: MutableList<MediaData> = mutableListOf()
     operator fun invoke(
-        tvListType: TvListType,
         pagingEnabled: Boolean = false,
+        timeWindow: String = "day",
     ): Flow<DataState<List<MediaData>>> {
-        if (tvListType != this.tvListType || !pagingEnabled) {
-            list.clear()
-            this.tvListType = tvListType
+        if (!pagingEnabled) {
             currentPage = 0
+            list.clear()
         }
-        return repo.getTvList(
-            tvListType = tvListType.toString(),
+        return repo.getTrendingTv(
             page = currentPage + 1,
+            timeWindow = timeWindow,
         ).map { dataState ->
             when (dataState) {
                 is DataState.InProgress -> dataState
@@ -44,8 +39,8 @@ class GetTVListUseCase @Inject constructor(
 
                 is DataState.Error -> if (currentPage > 0) {
                     invoke(
-                        tvListType = tvListType,
                         pagingEnabled = false,
+                        timeWindow = timeWindow,
                     ).filter { it !is DataState.InProgress }.first()
                 } else {
                     dataState
