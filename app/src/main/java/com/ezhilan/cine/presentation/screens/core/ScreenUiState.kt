@@ -5,7 +5,7 @@ import java.io.Serializable
 
 interface ScreenUiState : Serializable {
     val isLoading: Boolean
-    val navigationItems: List<Enum<*>>
+    val screenStack: List<Enum<*>>
     val alertMessage: UiText
 
     fun copyWith(isLoading: Boolean): ScreenUiState

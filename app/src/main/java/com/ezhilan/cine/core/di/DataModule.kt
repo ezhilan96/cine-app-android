@@ -1,7 +1,5 @@
 package com.ezhilan.cine.core.di
 
-import com.ezhilan.cine.data.dataSource.remote.SocketService
-import com.ezhilan.cine.data.dataSource.remote.SocketServiceImpl
 import com.ezhilan.cine.data.repository.AuthRepositoryImpl
 import com.ezhilan.cine.data.repository.HomeRepositoryImpl
 import com.ezhilan.cine.data.repository.core.NetworkConnectionRepositoryImpl
@@ -25,10 +23,6 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindHomeRepository(homeRepositoryImpl: HomeRepositoryImpl): HomeRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindSocketService(socketServiceImpl: SocketServiceImpl): SocketService
 
     @Binds
     @Singleton

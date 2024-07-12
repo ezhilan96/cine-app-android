@@ -1,115 +1,171 @@
 package com.ezhilan.cine.domain.useCases.core
 
-import com.ezhilan.cine.data.model.remote.response.BookingListResponse
-import com.ezhilan.cine.domain.entity.DateTime
-import com.ezhilan.cine.domain.entity.ListData
+import com.ezhilan.cine.data.model.remote.response.home.Genre
+import com.ezhilan.cine.data.model.remote.response.home.MediaResult
+import com.ezhilan.cine.data.model.remote.response.home.MovieResult
+import com.ezhilan.cine.data.model.remote.response.home.PeopleResult
+import com.ezhilan.cine.data.model.remote.response.home.TvResult
+import com.ezhilan.cine.data.util.DataState
+import com.ezhilan.cine.domain.entity.MediaData
+import com.ezhilan.cine.domain.entity.MediaType
+import com.ezhilan.cine.domain.useCases.home.GetGenresUseCase
 import com.ezhilan.cine.presentation.util.AppTextActions
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class MapEntityUseCase {
-
+class MapEntityUseCase @Inject constructor(
+    private val getGenres: GetGenresUseCase,
+) {
     private val appTextActions = AppTextActions()
+    private var genres: List<Genre> = listOf()
 
-//    operator fun invoke(bookingResponse: B2cBookingDetailResponse): BookingData? {
-//        return try {
-//            val tripType = appTextActions.convertTripType(
-//                tripType = bookingResponse.bookingType,
-//                isReturn = !bookingResponse.returnTravelDateTime.isNullOrEmpty(),
-//            )!!
-//            val bookingStatus = bookingResponse.status?.let { status ->
-//                b2cStatusDataList.first { it.second == status }.first
-//            }!!
-//            val dateTime =
-//                bookingResponse.travelDateTime?.let { appTextActions.convertUTC(it) } ?: DateTime()
-//            val returnDateTime =
-//                bookingResponse.returnTravelDateTime?.let { appTextActions.convertUTC(it) }
-//                    ?: DateTime()
-//
-//            val hours = bookingResponse.packageDuration?.let { it / 60 }
-//            BookingData(
-//                id = bookingResponse.id!!.toString(),
-//                displayId = bookingResponse.bookingId ?: Constants.DEFAULT_STRING,
-//                tripType = tripType,
-//                vehicleType = bookingResponse.vehicleTypeName ?: Constants.DEFAULT_STRING,
-//                vehicle = "${bookingResponse.vehicleMake} ${bookingResponse.vehicleModel}",
-//                cash = bookingResponse.paymentInfo?.cash?.roundToInt()?.toString()
-//                    ?: Constants.DEFAULT_STRING,
-//                pickup = AddressInfo(
-//                    address = bookingResponse.pickup ?: Constants.DEFAULT_STRING,
-//                    location = LatLng(
-//                        bookingResponse.pickupInfo?.lat ?: 0.0,
-//                        bookingResponse.pickupInfo?.lng ?: 0.0
-//                    ),
-//                    shortAddress = bookingResponse.pickupInfo?.postcode ?: Constants.DEFAULT_STRING,
-//                ),
-//                drop = AddressInfo(
-//                    address = bookingResponse.dropoff ?: Constants.DEFAULT_STRING,
-//                    location = LatLng(
-//                        bookingResponse.dropoffInfo?.lat ?: 0.0,
-//                        bookingResponse.dropoffInfo?.lng ?: 0.0
-//                    ),
-//                    shortAddress = bookingResponse.dropoffInfo?.postcode
-//                        ?: Constants.DEFAULT_STRING,
-//                ),
-//                viaPoints = bookingResponse.viaDetails?.map {
-//                    val hour = Constants.DOUBLE_ZERO_PADDING.format((it.duration ?: 0) / 60)
-//                    val minute = Constants.DOUBLE_ZERO_PADDING.format((it.duration ?: 0) % 60)
-//                    val eta = UiText.Resource(R.string.body_time, hour, minute)
-//                    AddressInfo(
-//                        address = it.address ?: "",
-//                        duration = eta,
-//                    )
-//                } ?: listOf(),
-//                dateTime = dateTime,
-//                distance = appTextActions.limitDecimalPoint(bookingResponse.distance),
-//                duration = appTextActions.getDurationFromHours(hours),
-//                returnDateTime = returnDateTime,
-//                returnDistance = appTextActions.limitDecimalPoint(bookingResponse.returnDistance),
-//                passengerCount = bookingResponse.passengerCount?.toString()
-//                    ?: Constants.DEFAULT_STRING,
-//                carrier = if (bookingResponse.isCarrier == true) UiText.Resource(R.string.yes)
-//                else UiText.Resource(R.string.no),
-//                flightNumber = bookingResponse.flightNumber ?: "",
-//                customerName = (bookingResponse.customer?.name
-//                    ?: Constants.DEFAULT_STRING).toUiText(),
-//                customerPhone = bookingResponse.customer?.let {
-//                    (it.countryCode ?: Constants.DEFAULT_STRING) + (it.phone
-//                        ?: Constants.DEFAULT_STRING)
-//                }?.toUiText() ?: UiText.Value(),
-//                operatorName = (bookingResponse.operatorInfo?.firstName
-//                    ?: Constants.DEFAULT_STRING).toUiText(),
-//                operatorPhone = bookingResponse.operatorInfo?.let {
-//                    (it.countryCode ?: Constants.DEFAULT_STRING) + (it.phone
-//                        ?: Constants.DEFAULT_STRING)
-//                }?.toUiText() ?: UiText.Value(),
-//                notes = bookingResponse.notes ?: "",
-//                status = bookingStatus,
-//                verificationCode = bookingResponse.verificationCode,
-//                bookingDocumentsData = BookingDocumentData(
-//                    startOdometerImageUrl = bookingResponse.startOdometerImage ?: "",
-//                    startOdometerReading = bookingResponse.meterStartDistance?.toString() ?: "",
-//                    endOdometerImageUrl = bookingResponse.endOdometerImage ?: "",
-//                    endOdometerReading = bookingResponse.meterEndDistance?.toString() ?: "",
-//                ),
-//            )
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            null
-//        }
-//    }
+    suspend operator fun invoke(response: MediaResult): Flow<MediaData> = flow {
+        if (genres.isEmpty()) {
+            genres = (getGenres().filter { it is DataState.Success }
+                .first() as? DataState.Success<List<Genre>>)?.data ?: listOf()
+        }
+        val result = try {
+            val mediaType = try {
+                MediaType.valueOf(response.media_type!!)
+            } catch (e: Exception) {
+                MediaType.all
+            }
+            MediaData(
+                id = response.id?.toString()!!,
+                mediaType = mediaType,
+                title = if (response.title.isNullOrEmpty()) {
+                    response.name ?: "-"
+                } else {
+                    response.title
+                },
+                overview = response.overview ?: "-",
+                backdropPath = response.backdrop_path?.ifEmpty { null },
+                posterPath = response.poster_path?.ifEmpty { null },
+                releaseYear = when (mediaType) {
+                    MediaType.movie -> response.release_date?.split("-")?.first() ?: "-"
 
-    operator fun invoke(bookingListResponse: BookingListResponse): ListData? {
-        return try {
-            val dateTime =
-                bookingListResponse.travelDateAndTime?.let { appTextActions.convertUTC(it) }
-                    ?: DateTime()
-            ListData(
-                id = bookingListResponse.id!!,
-                date = dateTime.date,
-                time = dateTime.time,
+                    MediaType.tv -> response.first_air_date?.split("-")?.first() ?: "-"
+
+                    else -> "-"
+                },
+                genres = response.genre_ids?.map { id -> genres.find { it.id == id }!! }
+                    ?: listOf(),
+                rating = if (response.vote_count == 0) {
+                    "-"
+                } else {
+                    appTextActions.limitDecimalPoint(response.vote_average)
+                },
             )
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
-    }
+        emit(result)
+    }.filterNotNull()
+
+    suspend operator fun invoke(response: MovieResult): Flow<MediaData> = flow {
+        if (genres.isEmpty()) {
+            genres = (getGenres().filter { it is DataState.Success }
+                .first() as? DataState.Success<List<Genre>>)?.data ?: listOf()
+        }
+        val result = try {
+            MediaData(
+                id = response.id?.toString()!!,
+                mediaType = MediaType.movie,
+                title = response.title ?: "-",
+                overview = response.overview ?: "-",
+                backdropPath = response.backdrop_path?.ifEmpty { null },
+                posterPath = response.poster_path?.ifEmpty { null },
+                releaseYear = response.release_date?.split("-")?.first() ?: "-",
+                genres = response.genre_ids?.mapNotNull { id -> genres.find { it.id == id } }
+                    ?: listOf(),
+                rating = if (response.vote_count == 0) {
+                    "-"
+                } else {
+                    appTextActions.limitDecimalPoint(response.vote_average)
+                },
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+        emit(result)
+    }.filterNotNull()
+
+    suspend operator fun invoke(response: TvResult): Flow<MediaData> = flow {
+        if (genres.isEmpty()) {
+            genres = (getGenres().filter { it is DataState.Success }
+                .first() as? DataState.Success<List<Genre>>)?.data ?: listOf()
+        }
+        val result = try {
+            MediaData(
+                id = response.id?.toString()!!,
+                mediaType = MediaType.tv,
+                title = response.name ?: "-",
+                overview = response.overview ?: "-",
+                backdropPath = response.backdrop_path?.ifEmpty { null },
+                posterPath = response.poster_path?.ifEmpty { null },
+                releaseYear = response.first_air_date?.split("-")?.first() ?: "-",
+                genres = response.genre_ids?.mapNotNull { id -> genres.find { it.id == id } }
+                    ?: listOf(),
+                rating = if (response.vote_count == 0) {
+                    "-"
+                } else {
+                    appTextActions.limitDecimalPoint(response.vote_average)
+                },
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+        emit(result)
+    }.filterNotNull()
+
+    suspend operator fun invoke(response: PeopleResult): Flow<MediaData> = flow {
+        val result = try {
+            MediaData(
+                id = response.id?.toString()!!,
+                mediaType = MediaType.person,
+                title = response.name ?: "-",
+                profilePath = response.profile_path?.ifEmpty { null },
+                peopleType = when (response.known_for_department) {
+                    "Acting" -> {
+                        when (response.gender) {
+                            1 -> "Actress"
+                            2 -> "Actor"
+                            else -> "Actor/Actress"
+                        }
+                    }
+
+                    "Directing" -> {
+                        "Director"
+                    }
+
+                    "Sound" -> {
+                        "Music composer"
+                    }
+
+                    "Art" -> {
+                        "Artist"
+                    }
+
+                    "Camera" -> {
+                        "Cinematographer"
+                    }
+
+                    else -> {
+                        ""
+                    }
+                }
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+        emit(result)
+    }.filterNotNull()
 }

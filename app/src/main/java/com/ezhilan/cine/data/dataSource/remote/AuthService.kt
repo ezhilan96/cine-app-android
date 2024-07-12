@@ -1,18 +1,18 @@
 package com.ezhilan.cine.data.dataSource.remote
 
-import com.ezhilan.cine.data.model.remote.request.GetOtpRequest
-import com.ezhilan.cine.data.model.remote.request.OTPVerificationRequest
-import com.ezhilan.cine.data.model.remote.response.OTPVerificationResponse
-import com.ezhilan.cine.data.model.remote.response.PhoneVerificationResponse
+import com.ezhilan.cine.data.model.remote.request.CreateSessionRequest
+import com.ezhilan.cine.data.model.remote.response.CreateRequestTokenResponse
+import com.ezhilan.cine.data.model.remote.response.CreateSessionResponse
 import retrofit2.http.Body
-import retrofit2.http.POST
+import retrofit2.http.GET
 
 interface AuthService {
 
-    @POST("/v2/drivers/get_otp")
-    suspend fun getOtp(@Body getOtpRequest: GetOtpRequest): PhoneVerificationResponse
+    @GET("/authentication/token/new")
+    suspend fun createRequestToken(): CreateRequestTokenResponse
 
-    @POST("/v2/drivers/verify_otp")
-    suspend fun verifyOTP(@Body otpVerificationRequest: OTPVerificationRequest): OTPVerificationResponse
+    @GET("/authentication/session/new")
+    suspend fun createSession(@Body createSessionRequest: CreateSessionRequest): CreateSessionResponse
+
 }
 

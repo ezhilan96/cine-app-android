@@ -1,87 +1,32 @@
 package com.ezhilan.cine.presentation
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ezhilan.cine.data.dataSource.local.dataStore.UserPreferencesDataStore
+import com.ezhilan.cine.presentation.config.AppTheme
 import com.ezhilan.cine.presentation.config.CineTheme
 import com.ezhilan.cine.presentation.screens.MainScreen
-import com.google.android.play.core.appupdate.AppUpdateManager
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.UpdateAvailability
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.MutableStateFlow
-
-private var appUpdateManager: AppUpdateManager? = null
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val intentState: MutableStateFlow<Intent> by lazy { MutableStateFlow(intent) }
-
-    private lateinit var onAvailableCallBack: () -> Unit
-    private var requestUpdateLauncher: ActivityResultLauncher<IntentSenderRequest>? =
-        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-            if (it.resultCode == RESULT_CANCELED) {
-                onAvailableCallBack()
-            }
-        }
+    @Inject
+    lateinit var dataStore: UserPreferencesDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        actionBar?.hide()
-        appUpdateManager ?: run { appUpdateManager = AppUpdateManagerFactory.create(this) }
         setContent {
-            CineTheme {
-                MainScreen(
-                    intentState = intentState,
-                    checkForUpdate = this::checkForUpdate,
-                )
+            val appTheme by dataStore.appTheme.collectAsStateWithLifecycle(initialValue = AppTheme.Light)
+            CineTheme(appTheme = appTheme) {
+                MainScreen()
             }
         }
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        intentState.value = intent
-    }
-
-    private fun checkForUpdate(onAvailable: () -> Unit, onUnAvailable: () -> Unit) {
-        onAvailableCallBack = onAvailable
-        try {
-            val appUpdateInfoTask = appUpdateManager!!.appUpdateInfo
-            appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-                val shouldStartUpdateFLow =
-                    appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(
-                        AppUpdateType.IMMEDIATE
-                    )
-                if (shouldStartUpdateFLow) {
-                    appUpdateManager!!.startUpdateFlowForResult(
-                        appUpdateInfo,
-                        requestUpdateLauncher!!,
-                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
-                    )
-                } else {
-                    onUnAvailable()
-                }
-            }.addOnFailureListener {
-                onUnAvailable()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            onUnAvailable()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        requestUpdateLauncher = null
     }
 }

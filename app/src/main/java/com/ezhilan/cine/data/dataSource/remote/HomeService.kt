@@ -1,50 +1,63 @@
 package com.ezhilan.cine.data.dataSource.remote
 
-import com.ezhilan.cine.data.model.remote.request.DeviceDataSubmitRequest
-import com.ezhilan.cine.data.model.remote.request.LiveTrackingRequest
-import com.ezhilan.cine.data.model.remote.response.AppConfigResponse
-import com.ezhilan.cine.data.model.remote.response.BookingListResponse
-import com.ezhilan.cine.data.model.remote.response.DirectionResponse
-import com.ezhilan.cine.data.model.remote.response.ImageUploadResponse
-import com.ezhilan.cine.data.model.remote.response.ListResponse
-import okhttp3.MultipartBody
-import retrofit2.Response
-import retrofit2.http.Body
+import com.ezhilan.cine.data.model.remote.response.core.ListResponse
+import com.ezhilan.cine.data.model.remote.response.home.GenreResponse
+import com.ezhilan.cine.data.model.remote.response.home.MediaResult
+import com.ezhilan.cine.data.model.remote.response.home.MovieResult
+import com.ezhilan.cine.data.model.remote.response.home.PeopleResult
+import com.ezhilan.cine.data.model.remote.response.home.TvResult
 import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.PATCH
-import retrofit2.http.POST
-import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface HomeService {
 
-    @GET("/config")
-    suspend fun getAppConfig(): AppConfigResponse
+    @GET("3/genre/movie/list")
+    suspend fun getMovieGenres(): GenreResponse
 
-    @PATCH("/location")
-    suspend fun updateLocation(@Body liveTrackingRequest: LiveTrackingRequest): Response<Unit>
+    @GET("3/genre/tv/list")
+    suspend fun getTvGenres(): GenreResponse
 
-    @POST("/device")
-    suspend fun submitDeviceData(@Body deviceDataSubmitRequest: DeviceDataSubmitRequest): Response<Unit>
+    @GET("/3/trending/all/{timeWindow}")
+    suspend fun getAllTrending(
+        @Path(value = "timeWindow") time: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<MediaResult>
 
-    @Multipart
-    @POST("v3/auth/odometer/image/upload/booking")
-    suspend fun uploadFile(@Part image: MultipartBody.Part): ImageUploadResponse
+    @GET("/3/trending/movie/{timeWindow}")
+    suspend fun getTrendingMovies(
+        @Path(value = "timeWindow") time: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<MovieResult>
 
-    @GET("/list")
-    suspend fun getList(
-        @Query(value = "skip", encoded = false) skip: Int = 0,
-        @Query(value = "limit", encoded = false) limit: Int = 10,
-    ): ListResponse<BookingListResponse>
+    @GET("/3/trending/tv/{timeWindow}")
+    suspend fun getTrendingTv(
+        @Path(value = "timeWindow") time: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<TvResult>
 
-    @GET("https://maps.googleapis.com/maps/api/directions/json")
-    suspend fun getDirections(
-        @Query("origin") origin: String,
-        @Query("destination") destination: String,
-        @Query("key") apiKey: String,
-    ): DirectionResponse
+    @GET("/3/trending/person/{timeWindow}")
+    suspend fun getTrendingPeople(
+        @Path(value = "timeWindow") time: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<PeopleResult>
 
-    @POST("/logout")
-    suspend fun logout(): Response<Unit>
+    @GET("3/movie/{movieLisType}")
+    suspend fun getMovieList(
+        @Path(value = "movieLisType") movieListType: String,
+        @Query("page") page: Int = 1,
+        @Query("region") region: String,
+    ): ListResponse<MovieResult>
+
+    @GET("3/tv/{tvListType}")
+    suspend fun getTvList(
+        @Path(value = "tvListType") tvListType: String,
+        @Query("page") page: Int = 1,
+    ): ListResponse<TvResult>
+
+    @GET("3/person/popular")
+    suspend fun getPopularPeople(
+        @Query("page") page: Int = 1,
+    ): ListResponse<PeopleResult>
+
 }

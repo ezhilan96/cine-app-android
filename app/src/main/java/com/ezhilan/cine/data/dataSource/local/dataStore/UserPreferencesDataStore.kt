@@ -4,14 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.ezhilan.cine.core.Constants.DEFAULT_LONG
-import com.ezhilan.cine.core.Constants.DEFAULT_STRING
-import com.ezhilan.cine.data.model.remote.response.OTPVerificationResponse
-import com.ezhilan.cine.domain.entity.AppConfigData
-import com.ezhilan.cine.domain.entity.UserData
+import com.ezhilan.cine.presentation.config.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -22,65 +16,17 @@ import javax.inject.Singleton
 class UserPreferencesDataStore @Inject constructor(
     private val userPreferencesDataStore: DataStore<Preferences>
 ) {
-    private val loginStatusKey = booleanPreferencesKey("isLoggedIn")
-    private val idKey = intPreferencesKey("id")
-    private val tokenKey = stringPreferencesKey("token")
-    private val phoneKey = longPreferencesKey("phone")
-    private val driverNameKey = stringPreferencesKey("driverNameKey")
-    private val googleApiKey = stringPreferencesKey("googleApiKey")
-    private val versionCodeKey = intPreferencesKey("versionCode")
-    private val isForceUpdateKey = booleanPreferencesKey("isForceUpdate")
-    private val isPartialUpdateKey = booleanPreferencesKey("isPartialUpdate")
+    private val sessionKey = booleanPreferencesKey("session")
+    private val appThemeKey = stringPreferencesKey("appTheme")
+    private val regionKey = stringPreferencesKey("region")
 
-    val isLoggedIn: Flow<Boolean> = userPreferencesDataStore.data.map { preferences ->
-        preferences[loginStatusKey] ?: false
-    }
-
-    suspend fun storeUserData(data: OTPVerificationResponse) {
-        userPreferencesDataStore.edit {
-            it[idKey] = data.id
-            it[tokenKey] = data.token
-            it[phoneKey] = data.phone ?: DEFAULT_LONG
-            it[driverNameKey] = data.name ?: DEFAULT_STRING
-        }
+    val isSessionActive: Flow<Boolean> = userPreferencesDataStore.data.map { preferences ->
+        preferences[sessionKey] ?: true
     }
 
     suspend fun login() {
         userPreferencesDataStore.edit {
-            it[loginStatusKey] = true
-        }
-    }
-
-    suspend fun putAppConfig(appConfigData: AppConfigData) {
-        userPreferencesDataStore.edit { mutablePreferences ->
-            mutablePreferences[googleApiKey] = appConfigData.googleApiKey
-            appConfigData.versionCode?.let { mutablePreferences[versionCodeKey] = it }
-            mutablePreferences[isForceUpdateKey] = appConfigData.isForceUpdate
-            mutablePreferences[isPartialUpdateKey] = appConfigData.isPartialUpdate
-        }
-    }
-
-    val appConfig: Flow<AppConfigData> = userPreferencesDataStore.data.map {
-        AppConfigData(
-            googleApiKey = it[googleApiKey] ?: "",
-            isForceUpdate = it[isForceUpdateKey] ?: false,
-            isPartialUpdate = it[isPartialUpdateKey] ?: false,
-            versionCode = it[versionCodeKey],
-        )
-    }
-
-
-    val userDetails: Flow<UserData?> = userPreferencesDataStore.data.map {
-        try {
-            UserData(
-                id = it[idKey]!!,
-                token = it[tokenKey]!!,
-                phone = "+91 ${it[phoneKey]}",
-                name = it[driverNameKey]!!,
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            it[sessionKey] = true
         }
     }
 
@@ -89,6 +35,32 @@ class UserPreferencesDataStore @Inject constructor(
             userPreferencesDataStore.edit {
                 it.clear()
             }
+        }
+    }
+
+    val appTheme: Flow<AppTheme> = userPreferencesDataStore.data.map { preferences ->
+        preferences[appThemeKey]?.let {
+            when (it) {
+                AppTheme.Light.name -> AppTheme.Light
+                AppTheme.Dark.name -> AppTheme.Dark
+                else -> AppTheme.System
+            }
+        } ?: AppTheme.Light
+    }
+
+    suspend fun setAppTheme(appTheme: AppTheme) {
+        userPreferencesDataStore.edit {
+            it[appThemeKey] = appTheme.name
+        }
+    }
+
+    val region: Flow<String> = userPreferencesDataStore.data.map { preferences ->
+        preferences[regionKey] ?: ""
+    }
+
+    suspend fun setRegion(region: String) {
+        userPreferencesDataStore.edit {
+            it[regionKey] = region
         }
     }
 }

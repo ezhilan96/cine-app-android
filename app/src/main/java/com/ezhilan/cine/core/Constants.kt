@@ -3,7 +3,6 @@ package com.ezhilan.cine.core
 const val TAG = "logi"
 
 object Constants {
-
     const val GOOGLE_DNS = "8.8.8.8"
     const val SUPPORT_CONTACT_NO = "+91 89392 92000"
 
@@ -17,16 +16,6 @@ object Constants {
         arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 //    val DAY_OF_WEEK: Array<String> = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
-    const val ALPHA_NOTIFICATION_ID = 1
-    const val BETA_NOTIFICATION_ID = 2
-
-    const val TWO_MB = 2 * 1024 * 1024
-    const val ONE_SEC_IN_MILLIS = 1 * 1000L
-    const val SIXTY_SEC_IN_MILLIS = 60 * 1000L
-    const val FIFTEEN_MINUTES_IN_MILLIS = 15 * 60 * 1000
-    const val TWENTY_MINUTES_IN_MILLIS = 20 * 60 * 1000
-    const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000
-
     const val DOUBLE_ZERO_PADDING = "%02d"
     const val SINGLE_DECIMAL_WRAPPING: String = "#.#"
     const val UTC_DATE_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
@@ -36,52 +25,275 @@ object Constants {
 
     const val ROUTE_SPLASH = "splashScreen"
     const val ROUTE_AUTH = "auth"
-    const val ROUTE_LOGIN = "loginScreen"
-    const val ROUTE_OTP = "otpScreen"
     const val ROUTE_HOME = "home"
-    const val ROUTE_DASHBOARD = "dashboardScreen"
-    const val ROUTE_LIST = "listScreen"
-    const val ROUTE_DETAIL = "detailScreen"
-    const val ROUTE_PROFILE = "profileScreen"
-    const val ROUTE_ARG_PHONE = "phone"
-    const val ROUTE_ARG_ID = "id"
 
-    const val KEY_ACTION = "ACTION"
-    const val KEY_REFRESH = "refresh"
-    const val KEY_NOTIFICATION_ID = "NotificationBookingId"
     const val KEY_STRING = "string"
     const val KEY_PLURALS = "plurals"
-    const val KEY_USER_PREFERENCES = "user_preferences"
-    const val KEY_INCORRECT = "incorrect"
-    const val KEY_INVALID = "invalid"
-    const val KEY_CONTENT = "content"
+    const val KEY_USER_PREFERENCES = "userPreferences"
 
-    const val JSON_TITLE = "title"
-    const val JSON_BODY = "body"
-    const val JSON_TYPE = "type"
-    const val JSON_ID = "id"
-    const val JSON_ANDROID = "Android"
-    const val JSON_MULTIPART = "multipart/form-data"
-    const val JSON_IMAGE = "image"
     const val JSON_AUTH_HEADER = "Authorization"
     const val JSON_BEARER_PREFIX = "bearer"
-    const val JSON_CORPORATE = "corporate"
-    const val JSON_SHUTTLE = "shuttle"
-    const val JSON_DRIVER = "driver"
-    const val JSON_NIGHT_CHARGE = "NIGHT_CHARGE"
-    const val JSON_BASE_FARE = "BASE_FARE"
-    const val JSON_OFFICE_PICKUP = "Office pickup"
-    const val JSON_HOME_PICKUP = "Home pickup"
-    const val JSON_BOOKRIDE = "bookRide"
-    const val JSON_OUTSTATION = "outstation"
-    const val JSON_MULTICITY = "multiCity"
-    const val JSON_PACKAGE = "package"
-    const val JSON_HOURLYRENTAL = "hourlyRental"
-    const val JSON_HOURLY_RENTAL = "hourly-rental"
-    const val JSON_LOCAL = "local"
-    const val JSON_ON_BOARDED = "onboarded"
-    const val JSON_DROPPED = "dropped"
-    const val JSON_NO_SHOW = "no show"
-    const val JSON_TO_BE_ONBOARD = "to be onboard"
-    const val JSON_TO_BE_DROPPED = "to be dropped"
+
+    const val ROUTE_LOGIN = "Route login"
+    const val ROUTE_OTP = "Route otp"
+    const val ROUTE_DASHBOARD = "Route dashboard"
+    const val ROUTE_MOVIE = "Route movie"
+    const val ROUTE_TV = "Route tv"
+    const val ROUTE_PEOPLE = "Route people"
+    const val ROUTE_TRENDING = "Route trending"
+    const val ROUTE_DISCOVER = "Route discover"
+    const val ROUTE_SETTINGS = "Route settings"
+
+    const val ROUTE_ARG_PHONE = "phone"
+
+    val regions: List<Pair<String, String>> = listOf(
+        "Afghanistan" to "AF",
+        "Åland Islands" to "AX",
+        "Albania" to "AL",
+        "Algeria" to "DZ",
+        "American Samoa" to "AS",
+        "Andorra" to "AD",
+        "Angola" to "AO",
+        "Anguilla" to "AI",
+        "Antarctica" to "AQ",
+        "Antigua and Barbuda" to "AG",
+        "Argentina" to "AR",
+        "Armenia" to "AM",
+        "Aruba" to "AW",
+        "Australia" to "AU",
+        "Austria" to "AT",
+        "Azerbaijan" to "AZ",
+        "Bahamas" to "BS",
+        "Bahrain" to "BH",
+        "Bangladesh" to "BD",
+        "Barbados" to "BB",
+        "Belarus" to "BY",
+        "Belgium" to "BE",
+        "Belize" to "BZ",
+        "Benin" to "BJ",
+        "Bermuda" to "BM",
+        "Bhutan" to "BT",
+        "Bolivia, Plurinational State of" to "BO",
+        "Bonaire, Sint Eustatius and Saba" to "BQ",
+        "Bosnia and Herzegovina" to "BA",
+        "Botswana" to "BW",
+        "Bouvet Island" to "BV",
+        "Brazil" to "BR",
+        "British Indian Ocean Territory" to "IO",
+        "Brunei Darussalam" to "BN",
+        "Bulgaria" to "BG",
+        "Burkina Faso" to "BF",
+        "Burundi" to "BI",
+        "Cabo Verde" to "CV",
+        "Cambodia" to "KH",
+        "Cameroon" to "CM",
+        "Canada" to "CA",
+        "Cayman Islands" to "KY",
+        "Central African Republic" to "CF",
+        "Chad" to "TD",
+        "Chile" to "CL",
+        "China" to "CN",
+        "Christmas Island" to "CX",
+        "Cocos (Keeling) Islands" to "CC",
+        "Colombia" to "CO",
+        "Comoros" to "KM",
+        "Congo" to "CG",
+        "Congo, Democratic Republic of the" to "CD",
+        "Cook Islands" to "CK",
+        "Costa Rica" to "CR",
+        "Côte d'Ivoire" to "CI",
+        "Croatia" to "HR",
+        "Cuba" to "CU",
+        "Curaçao" to "CW",
+        "Cyprus" to "CY",
+        "Czechia" to "CZ",
+        "Denmark" to "DK",
+        "Djibouti" to "DJ",
+        "Dominica" to "DM",
+        "Dominican Republic" to "DO",
+        "Ecuador" to "EC",
+        "Egypt" to "EG",
+        "El Salvador" to "SV",
+        "Equatorial Guinea" to "GQ",
+        "Eritrea" to "ER",
+        "Estonia" to "EE",
+        "Eswatini" to "SZ",
+        "Ethiopia" to "ET",
+        "Falkland Islands (Malvinas)" to "FK",
+        "Faroe Islands" to "FO",
+        "Fiji" to "FJ",
+        "Finland" to "FI",
+        "France" to "FR",
+        "French Guiana" to "GF",
+        "French Polynesia" to "PF",
+        "French Southern Territories" to "TF",
+        "Gabon" to "GA",
+        "Gambia" to "GM",
+        "Georgia" to "GE",
+        "Germany" to "DE",
+        "Ghana" to "GH",
+        "Gibraltar" to "GI",
+        "Greece" to "GR",
+        "Greenland" to "GL",
+        "Grenada" to "GD",
+        "Guadeloupe" to "GP",
+        "Guam" to "GU",
+        "Guatemala" to "GT",
+        "Guernsey" to "GG",
+        "Guinea" to "GN",
+        "Guinea-Bissau" to "GW",
+        "Guyana" to "GY",
+        "Haiti" to "HT",
+        "Heard Island and McDonald Islands" to "HM",
+        "Holy See" to "VA",
+        "Honduras" to "HN",
+        "Hong Kong" to "HK", "Hungary" to "HU",
+        "Hungary" to "HU",
+        "Iceland" to "IS",
+        "India" to "IN",
+        "Indonesia" to "ID",
+        "Iran, Islamic Republic of" to "IR",
+        "Iraq" to "IQ",
+        "Ireland" to "IE",
+        "Isle of Man" to "IM",
+        "Israel" to "IL",
+        "Italy" to "IT",
+        "Jamaica" to "JM",
+        "Japan" to "JP",
+        "Jersey" to "JE",
+        "Jordan" to "JO",
+        "Kazakhstan" to "KZ",
+        "Kenya" to "KE",
+        "Kiribati" to "KI",
+        "Korea, Democratic People's Republic of" to "KP",
+        "Korea, Republic of" to "KR",
+        "Kuwait" to "KW",
+        "Kyrgyzstan" to "KG",
+        "Lao People's Democratic Republic" to "LA",
+        "Latvia" to "LV",
+        "Lebanon" to "LB",
+        "Lesotho" to "LS",
+        "Liberia" to "LR",
+        "Libya" to "LY",
+        "Liechtenstein" to "LI",
+        "Lithuania" to "LT",
+        "Luxembourg" to "LU",
+        "Macao" to "MO",
+        "Madagascar" to "MG",
+        "Malawi" to "MW",
+        "Malaysia" to "MY",
+        "Maldives" to "MV",
+        "Mali" to "ML",
+        "Malta" to "MT",
+        "Marshall Islands" to "MH",
+        "Martinique" to "MQ",
+        "Mauritania" to "MR",
+        "Mauritius" to "MU",
+        "Mayotte" to "YT",
+        "Mexico" to "MX",
+        "Micronesia, Federated States of" to "FM",
+        "Moldova, Republic of" to "MD",
+        "Monaco" to "MC",
+        "Mongolia" to "MN",
+        "Montenegro" to "ME",
+        "Montserrat" to "MS",
+        "Morocco" to "MA",
+        "Mozambique" to "MZ",
+        "Myanmar" to "MM",
+        "Namibia" to "NA",
+        "Nauru" to "NR",
+        "Nepal" to "NP",
+        "Netherlands, Kingdom of the" to "NL",
+        "New Caledonia" to "NC",
+        "New Zealand" to "NZ",
+        "Nicaragua" to "NI",
+        "Niger" to "NE",
+        "Nigeria" to "NG",
+        "Niue" to "NU",
+        "Norfolk Island" to "NF",
+        "North Macedonia" to "MK",
+        "Northern Mariana Islands" to "MP",
+        "Norway" to "NO",
+        "Oman" to "OM",
+        "Pakistan" to "PK",
+        "Palau" to "PW",
+        "Palestine, State of" to "PS",
+        "Panama" to "PA",
+        "Papua New Guinea" to "PG",
+        "Paraguay" to "PY",
+        "Peru" to "PE",
+        "Philippines" to "PH",
+        "Pitcairn" to "PN",
+        "Poland" to "PL",
+        "Portugal" to "PT",
+        "Puerto Rico" to "PR",
+        "Qatar" to "QA",
+        "Réunion" to "RE",
+        "Romania" to "RO",
+        "Russian Federation" to "RU",
+        "Rwanda" to "RW",
+        "Saint Barthélemy" to "BL",
+        "Saint Helena, Ascension and Tristan da Cunha" to "SH",
+        "Saint Kitts and Nevis" to "KN",
+        "Saint Lucia" to "LC",
+        "Saint Martin (French part)" to "MF",
+        "Saint Pierre and Miquelon" to "PM",
+        "Saint Vincent and the Grenadines" to "VC",
+        "Samoa" to "WS",
+        "San Marino" to "SM",
+        "Sao Tome and Principe" to "ST",
+        "Saudi Arabia" to "SA",
+        "Senegal" to "SN",
+        "Serbia" to "RS",
+        "Seychelles" to "SC",
+        "Sierra Leone" to "SL",
+        "Singapore" to "SG",
+        "Sint Maarten (Dutch part)" to "SX",
+        "Slovakia" to "SK",
+        "Slovenia" to "SI",
+        "Solomon Islands" to "SB",
+        "Somalia" to "SO",
+        "South Africa" to "ZA",
+        "South Georgia and the South Sandwich Islands" to "GS",
+        "South Sudan" to "SS",
+        "Spain" to "ES",
+        "Sri Lanka" to "LK",
+        "Sudan" to "SD",
+        "Suriname" to "SR", "Sweden" to "SE",
+        "Svalbard and Jan Mayen" to "SJ",
+        "Switzerland" to "CH",
+        "Syrian Arab Republic" to "SY",
+        "Taiwan, Province of China" to "TW",
+        "Tajikistan" to "TJ",
+        "Tanzania, United Republic of" to "TZ",
+        "Thailand" to "TH",
+        "Timor-Leste" to "TL",
+        "Togo" to "TG",
+        "Tokelau" to "TK",
+        "Tonga" to "TO",
+        "Trinidad and Tobago" to "TT",
+        "Tunisia" to "TN",
+        "Turkey" to "TR",
+        "Turkmenistan" to "TM",
+        "Turks and Caicos Islands" to "TC",
+        "Tuvalu" to "TV",
+        "Uganda" to "UG",
+        "Ukraine" to "UA",
+        "United Arab Emirates" to "AE",
+        "United Kingdom of Great Britain and Northern Ireland" to "GB",
+        "United States of America" to "US",
+        "United States Minor Outlying Islands" to "UM",
+        "Uruguay" to "UY",
+        "Uzbekistan" to "UZ",
+        "Vanuatu" to "VU",
+        "Venezuela, Bolivarian Republic of" to "VE",
+        "Viet Nam" to "VN",
+        "Virgin Islands, British" to "VG",
+        "Virgin Islands, U.S." to "VI",
+        "Wallis and Futuna" to "WF",
+        "Western Sahara" to "EH",
+        "Yemen" to "YE",
+        "Zambia" to "ZM",
+        "Zimbabwe" to "ZW"
+    )
 }

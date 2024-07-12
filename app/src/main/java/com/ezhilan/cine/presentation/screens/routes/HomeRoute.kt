@@ -1,34 +1,47 @@
 package com.ezhilan.cine.presentation.screens.routes
 
-import android.content.Intent
-import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
+import androidx.annotation.DrawableRes
+import com.ezhilan.cine.R
 import com.ezhilan.cine.core.Constants
 
 sealed class HomeRoute(val route: String) {
-
-    data object DashboardDestination : HomeRoute(route = Constants.ROUTE_DASHBOARD) {
-        val deepLinks = listOf(navDeepLink {
-            uriPattern = "https://com.cine/"
-            action = Intent.ACTION_VIEW
-        })
-    }
-
-    data object ListDestination : HomeRoute(route = Constants.ROUTE_LIST) {
-
-        fun navigateToDetail(navController: NavController, id: String) {
-            navController.navigate("${DetailDestination.route}/$id")
-        }
-    }
-
-    data object DetailDestination : HomeRoute(route = Constants.ROUTE_DETAIL) {
-        const val ID_ARG: String = Constants.ROUTE_ARG_ID
-
-        val routeWithArgs: String = "$route/{$ID_ARG}"
-        val arguments = listOf(navArgument(ID_ARG) { type = NavType.StringType })
-    }
-
-    data object ProfileDestination : HomeRoute(route = Constants.ROUTE_PROFILE)
+    data object DashboardDestination : HomeRoute(route = Constants.ROUTE_DASHBOARD)
+    data object MovieDestination : HomeRoute(route = Constants.ROUTE_MOVIE)
+    data object TvDestination : HomeRoute(route = Constants.ROUTE_TV)
+    data object PeopleDestination : HomeRoute(route = Constants.ROUTE_PEOPLE)
 }
+
+sealed class DashboardRoute(
+    val route: String,
+    val label: String,
+    @DrawableRes val icon: Int,
+) {
+
+    data object TrendingDestination :
+        DashboardRoute(
+            route = Constants.ROUTE_TRENDING,
+            label = "Trending",
+            icon = R.drawable.ic_trending
+        )
+
+    data object DiscoverDestination :
+        DashboardRoute(
+            route = Constants.ROUTE_DISCOVER,
+            label = "Discover",
+            icon = R.drawable.ic_discover
+        )
+
+    data object SettingsDestination :
+        DashboardRoute(
+            route = Constants.ROUTE_SETTINGS,
+            label = "Settings",
+            icon = R.drawable.ic_settings
+        )
+}
+
+
+val dashboardMenuItems= listOf(
+    DashboardRoute.TrendingDestination,
+    DashboardRoute.DiscoverDestination,
+    DashboardRoute.SettingsDestination
+)

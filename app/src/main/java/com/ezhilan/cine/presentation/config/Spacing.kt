@@ -19,11 +19,15 @@ data class Spacing(
     val unit50: Dp = (sizeFactor * 50).dp,
     val unit100: Dp = (sizeFactor * 100).dp,
 
+    val grid05: Dp = (sizeFactor * 4).dp,
     val grid1: Dp = (sizeFactor * 8).dp,
     val grid2: Dp = (sizeFactor * 16).dp,
     val grid3: Dp = (sizeFactor * 24).dp,
     val grid4: Dp = (sizeFactor * 32).dp,
     val grid5: Dp = (sizeFactor * 40).dp,
+
+    val size_rating_star: Dp = (sizeFactor * 14).dp,
+    val height_search_bar: Dp = (sizeFactor * 56).dp,
 )
 
 val LocalSpacing = compositionLocalOf { Spacing() }

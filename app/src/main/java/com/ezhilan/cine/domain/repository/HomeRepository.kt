@@ -1,41 +1,52 @@
 package com.ezhilan.cine.domain.repository
 
-import android.location.Location
-import com.ezhilan.cine.data.model.remote.request.DeviceDataSubmitRequest
-import com.ezhilan.cine.data.model.remote.response.AppConfigResponse
-import com.ezhilan.cine.data.model.remote.response.BookingListResponse
-import com.ezhilan.cine.data.model.remote.response.DirectionResponse
-import com.ezhilan.cine.data.model.remote.response.ImageUploadResponse
-import com.ezhilan.cine.data.model.remote.response.ListResponse
+import com.ezhilan.cine.data.model.remote.response.core.ListResponse
+import com.ezhilan.cine.data.model.remote.response.home.Genre
+import com.ezhilan.cine.data.model.remote.response.home.GenreResponse
+import com.ezhilan.cine.data.model.remote.response.home.MediaResult
+import com.ezhilan.cine.data.model.remote.response.home.MovieResult
+import com.ezhilan.cine.data.model.remote.response.home.PeopleResult
+import com.ezhilan.cine.data.model.remote.response.home.TvResult
 import com.ezhilan.cine.data.util.DataState
-import com.ezhilan.cine.domain.entity.LatLng
 import kotlinx.coroutines.flow.Flow
-import okhttp3.MultipartBody
-import retrofit2.Response
 
 interface HomeRepository {
 
-    fun getAppConfig(): Flow<DataState<AppConfigResponse>>
+    val genres: List<Genre>
+    fun setGenres(genres: List<Genre>)
 
-    fun updateLocation(location: Location, deviceId: String)
+    fun getAllTrending(
+        page: Int = 1, timeWindow: String = "day"
+    ): Flow<DataState<ListResponse<MediaResult>>>
 
-    fun onLocationUpdateStop()
+    fun getTrendingMovies(
+        page: Int = 1, timeWindow: String = "day"
+    ): Flow<DataState<ListResponse<MovieResult>>>
 
-    fun enableTripDistanceTracking(bookingId: String)
+    fun getTrendingTv(
+        page: Int = 1, timeWindow: String = "day"
+    ): Flow<DataState<ListResponse<TvResult>>>
 
-    fun getOnGoingTripDistance(bookingId: String): Double?
+    fun getTrendingPeople(
+        page: Int = 1, timeWindow: String = "day"
+    ): Flow<DataState<ListResponse<PeopleResult>>>
 
-    fun getBookingList(
-        skip: Int,
-        isPendingList: Boolean = true,
-    ): Flow<DataState<ListResponse<BookingListResponse>>>
+    fun getMovieGenres(): Flow<DataState<GenreResponse>>
 
-    fun submitDeviceData(deviceDataSubmitRequest: DeviceDataSubmitRequest): Flow<DataState<Response<Unit>>>
+    fun getTvGenres(): Flow<DataState<GenreResponse>>
 
-    fun uploadFile(image: MultipartBody.Part): Flow<DataState<ImageUploadResponse>>
+    fun getMovieList(
+        movieListType: String,
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<MovieResult>>>
 
-    suspend fun getDirection(
-        origin: LatLng,
-        destination: LatLng,
-    ): Flow<DataState<DirectionResponse>>
+    fun getTvList(
+        tvListType: String,
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<TvResult>>>
+
+    fun getPopularPeopleList(
+        page: Int = 1,
+    ): Flow<DataState<ListResponse<PeopleResult>>>
+
 }
