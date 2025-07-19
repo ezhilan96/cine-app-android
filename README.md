@@ -33,7 +33,7 @@ and TV shows using the TMDB (The Movie Database) API.
 
 <img src="https://github.com/user-attachments/assets/c6d99bd9-25dc-4d4d-aaf3-f4f9a2ad9554" width="240"/>
 
-<img src="https://github.com/user-attachments/assets/72231d59-7ff8-46ba-8701-0955d2d59080" width="240"/>
+<img src="https://github.com/user-attachments/assets/59441776-0271-4c38-83a6-859b714bbe61" width="240"/>
 
 <img src="https://github.com/user-attachments/assets/01ac60cf-84ef-4cfb-b0df-51069f714d80" width="240"/>
 
@@ -47,7 +47,7 @@ and TV shows using the TMDB (The Movie Database) API.
 
 <img src="https://github.com/user-attachments/assets/84dceaa1-26c3-4d61-b0aa-ee3627e76d2c" width="240"/>
 
-<img src="https://github.com/user-attachments/assets/59441776-0271-4c38-83a6-859b714bbe61" width="240"/>
+<img src="https://github.com/user-attachments/assets/72231d59-7ff8-46ba-8701-0955d2d59080" width="240"/>
 
 <img src="https://github.com/user-attachments/assets/2b66cd6a-8abf-4b9b-863d-5c796484321f" width="240"/>
 
